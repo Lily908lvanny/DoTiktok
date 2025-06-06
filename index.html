@@ -1,443 +1,573 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Game Over CI - Survie à Abidjan</title>
-    <style>
-        :root {
-            --primary-color: #F2994A;
-            --background: #FAF9F6;
-            --text: #333;
-            --border: #ddd;
-            --light-shadow: rgba(0, 0, 0, 0.1);
-            --stat-low: #ff6b6b;
-            --stat-medium: #ffd166;
-            --stat-high: #06d6a0;
-            --inventory-bg: #f1f1f1;
-            --button-hover: #e67e22;
-            --success: #06d6a0;
-            --danger: #ef476f;
-        }
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-        body {
-            background-color: var(--background);
-            color: var(--text);
-            line-height: 1.6;
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 15px;
-            height: 100vh;
-            position: relative;
-            display: flex;
-            flex-direction: column;
-        }
-        .game-container {
-            display: flex;
-            flex-direction: column;
-            height: 100%;
-        }
-        .header {
-            border-bottom: 1px solid var(--border);
-            padding-bottom: 10px;
-            margin-bottom: 15px;
-        }
-        .title {
-            font-size: 1.8rem;
-            text-align: center;
-            margin-bottom: 5px;
-            color: var(--primary-color);
-        }
-        .day-counter {
-            text-align: center;
-            font-size: 1.1rem;
-            margin-bottom: 10px;
-        }
-        .stats-container {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: space-between;
-            gap: 5px;
-            margin-bottom: 15px;
-        }
-        .stat {
-            flex: 1 0 48%;
-            background-color: white;
-            border-radius: 8px;
-            padding: 10px;
-            box-shadow: 0 2px 5px var(--light-shadow);
-            min-width: 140px;
-            margin-bottom: 8px;
-        }
-        .stat-name {
-            display: flex;
-            align-items: center;
-            margin-bottom: 5px;
-            font-weight: 500;
-        }
-        .stat-name span {
-            margin-right: 5px;
-        }
-        .stat-bar {
-            height: 8px;
-            background-color: #e0e0e0;
-            border-radius: 4px;
-            margin-bottom: 5px;
-            overflow: hidden;
-        }
-        .stat-value {
-            height: 100%;
-            transition: width 0.5s ease-in-out;
-        }
-        .stat-numeric {
-            display: flex;
-            justify-content: space-between;
-            font-size: 0.9rem;
-            color: #666;
-        }
-        .content-area {
-            flex-grow: 1;
-            overflow-y: auto;
-            background-color: white;
-            border-radius: 8px;
-            padding: 15px;
-            box-shadow: 0 2px 5px var(--light-shadow);
-            margin-bottom: 15px;
-            display: flex;
-            flex-direction: column;
-        }
-        .narrative {
-            font-size: 1.1rem;
-            margin-bottom: 20px;
-            flex-grow: 1;
-        }
-        .choices-container {
-            display: grid;
-            gap: 12px;
-        }
-        .choice-btn {
-            background-color: var(--primary-color);
-            border: none;
-            border-radius: 8px;
-            padding: 15px;
-            font-size: 1rem;
-            color: white;
-            cursor: pointer;
-            transition: all 0.2s;
-            text-align: left;
-            box-shadow: 0 2px 4px var(--light-shadow);
-        }
-        .choice-btn:hover {
-            background-color: var(--button-hover);
-            transform: translateY(-2px);
-        }
-        .inventory-container {
-            background-color: var(--inventory-bg);
-            border-radius: 8px;
-            padding: 15px;
-            box-shadow: 0 2px 5px var(--light-shadow);
-        }
-        .inventory-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 10px;
-        }
-        .inventory-items {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-        }
-        .inventory-item {
-            background-color: white;
-            border-radius: 8px;
-            padding: 8px;
-            font-size: 0.9rem;
-            display: flex;
-            align-items: center;
-            min-width: 120px;
-        }
-        .inventory-emoji {
-            margin-right: 8px;
-            font-size: 1.2rem;
-        }
-        .notification {
-            position: fixed;
-            top: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            padding: 15px 20px;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            animation: fadeInOut 3s forwards;
-            opacity: 0;
-            z-index: 1000;
-        }
-        @keyframes fadeInOut {
-            0% { opacity: 0; top: 10px; }
-            10% { opacity: 1; top: 20px; }
-            90% { opacity: 1; top: 20px; }
-            100% { opacity: 0; top: 10px; }
-        }
-        .notification-success {
-            background-color: var(--success);
-            color: white;
-        }
-        .notification-danger {
-            background-color: var(--danger);
-            color: white;
-        }
-        .notification-warning {
-            background-color: var(--stat-medium);
-            color: black;
-        }
-        .game-over, .end-screen {
-            position: fixed !important;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background-color: rgba(0, 0, 0, 0.90);
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            z-index: 9999 !important;
-            padding: 20px;
-            text-align: center;
-            overflow-y: auto;
-        }
-        .end-content {
-            background-color: var(--background);
-            border-radius: 8px;
-            padding: 30px;
-            max-width: 600px;
-            max-height: 90vh;
-            overflow-y: auto;
-        }
-        .end-title {
-            font-size: 2rem;
-            color: var(--primary-color);
-            margin-bottom: 20px;
-        }
-        .end-btn {
-            background-color: var(--primary-color);
-            color: white;
-            border: none;
-            padding: 15px 30px;
-            font-size: 1.2rem;
-            border-radius: 8px;
-            margin-top: 20px;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-        .end-btn:hover {
-            background-color: var(--button-hover);
-        }
-        .npc-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-            gap: 15px;
-            margin-top: 20px;
-        }
-        .npc-item {
-            background-color: white;
-            border-radius: 8px;
-            padding: 15px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-        .npc-name {
-            font-weight: 600;
-            margin-bottom: 8px;
-        }
-        /* ==== CORRECTIONS MOBILE ==== */
-        @media (max-width: 600px) {
-            body {
-                padding: 10px 2px;
-                overflow-x: hidden;
-            }
-            .game-container {
-                min-height: 100vh;
-                height: auto;
-                flex-direction: column;
-            }
-            .content-area,
-            .inventory-container {
-                padding: 8px;
-                margin-bottom: 10px;
-                max-height: 40vh;
-                overflow-y: auto;
-            }
-            .header {
-                padding-bottom: 5px;
-                margin-bottom: 8px;
-                position: static;
-            }
-            .stat {
-                flex: 1 0 100%;
-                padding: 6px;
-                min-width: unset;
-                font-size: 0.92rem;
-            }
-            .narrative {
-                font-size: 1rem;
-                margin-bottom: 10px;
-            }
-            .choice-btn {
-                padding: 11px;
-                font-size: 0.96rem;
-            }
-            .inventory-item {
-                padding: 4px;
-                min-width: 85px;
-                font-size: 0.96rem;
-            }
-            * {
-                --color: transparent;
-                -webkit-touch-callout: none;
-            }
-        }
-        @media (max-width: 600px) and (orientation: landscape) {
-            .game-container {
-                display: flex;
-                flex-direction: column;
-                height: auto;
-            }
-            .content-area,
-            .inventory-container {
-                max-height: 40vw;
-            }
-        }
-        @media (max-height: 650px) {
-            .header {
-                margin-bottom: 8px;
-                padding-bottom: 5px;
-            }
-            .narrative {
-                margin-bottom: 10px;
-            }
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Game Over CI - Aventure Abidjanaise</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap');
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background-color: #f5f5dc;
+      color: #333;
+      overflow-x: hidden;
+    }
+
+    .gbaka {
+      animation: moveBus 15s linear infinite;
+    }
+
+    @keyframes moveBus {
+      0% { transform: translateX(-100%); }
+      100% { transform: translateX(120%); }
+    }
+
+    .text-outline {
+      text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
+    }
+
+    .pulse {
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(236, 201, 75, 0.7); }
+      70% { transform: scale(1); box-shadow: 0 0 0 10px rgba(236, 201, 75, 0); }
+      100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(236, 201, 75, 0); }
+    }
+
+    .speech-bubble {
+      position: relative;
+      background: #fff;
+      border-radius: .4em;
+      padding: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.2);
+    }
+
+    .speech-bubble:after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 15%;
+      width: 0;
+      height: 0;
+      border: 20px solid transparent;
+      border-top-color: #fff;
+      border-bottom: 0;
+      border-left: 0;
+      margin-left: -10px;
+      margin-bottom: -20px;
+    }
+  </style>
 </head>
-<body>
-    <div class="game-container">
-        <!-- Barre de statut -->
-        <div class="header">
-            <h1 class="title">Game Over CI</h1>
-            <div class="day-counter">Jour 1/7 - Après-midi</div>
-            <div class="stats-container">
-                <div class="stat">
-                    <div class="stat-name"><span>💰</span> Argent</div>
-                    <div class="stat-bar">
-                        <div id="money-bar" class="stat-value" style="width: 80%; background-color: var(--stat-high);"></div>
-                    </div>
-                    <div class="stat-numeric">
-                        <span>0 FCFA</span>
-                        <span>10,000 FCFA</span>
-                        <span id="money-value">2,500</span>
-                    </div>
-                </div>
-                <div class="stat">
-                    <div class="stat-name"><span>🍗</span> Faim</div>
-                    <div class="stat-bar">
-                        <div id="hunger-bar" class="stat-value" style="width: 60%; background-color: var(--stat-medium);"></div>
-                    </div>
-                    <div class="stat-numeric">
-                        <span>Affamé</span>
-                        <span>Rassasié</span>
-                        <span id="hunger-value">6/10</span>
-                    </div>
-                </div>
-                <div class="stat">
-                    <div class="stat-name"><span>💤</span> Énergie</div>
-                    <div class="stat-bar">
-                        <div id="energy-bar" class="stat-value" style="width: 70%; background-color: var(--stat-high);"></div>
-                    </div>
-                    <div class="stat-numeric">
-                        <span>Épuisé</span>
-                        <span>Énergique</span>
-                        <span id="energy-value">7/10</span>
-                    </div>
-                </div>
-                <div class="stat">
-                    <div class="stat-name"><span>😰</span> Stress</div>
-                    <div class="stat-bar">
-                        <div id="stress-bar" class="stat-value" style="width: 30%; background-color: var(--stat-high);"></div>
-                    </div>
-                    <div class="stat-numeric">
-                        <span>Calme</span>
-                        <span>Stressé</span>
-                        <span id="stress-value">3/10</span>
-                    </div>
-                </div>
-                <div class="stat">
-                    <div class="stat-name"><span>⚖️</span> Moralité</div>
-                    <div class="stat-bar">
-                        <div id="morality-bar" class="stat-value" style="width: 90%; background-color: var(--stat-high);"></div>
-                    </div>
-                    <div class="stat-numeric">
-                        <span>Corrompu</span>
-                        <span>Intègre</span>
-                        <span id="morality-value">9/10</span>
-                    </div>
-                </div>
-                <div class="stat">
-                    <div class="stat-name"><span>📱</span> Social</div>
-                    <div class="stat-bar">
-                        <div id="social-bar" class="stat-value" style="width: 50%; background-color: var(--stat-medium);"></div>
-                    </div>
-                    <div class="stat-numeric">
-                        <span>Isolé</span>
-                        <span>Populaire</span>
-                        <span id="social-value">5/10</span>
-                    </div>
-                </div>
-            </div>
+<body class="min-h-screen relative overflow-hidden bg-amber-50">
+  <!-- Barre supérieure -->
+  <div class="fixed top-0 left-0 right-0 z-50 bg-orange-800 bg-opacity-90 text-white p-2 shadow-lg">
+    <div class="flex justify-between items-center">
+      <div class="flex items-center">
+        <div class="bg-yellow-400 text-orange-900 font-bold rounded-full w-8 h-8 flex items-center justify-center">CI</div>
+        <h1 class="ml-2 font-bold text-lg">GAME OVER CI</h1>
+      </div>
+      <div class="flex space-x-2 text-xs">
+        <div class="bg-orange-600 px-2 py-1 rounded-full flex items-center">
+          <i class="fas fa-coins text-yellow-300 mr-1"></i><span>5 000 FCFA</span>
         </div>
-        
-        <!-- Zone de contenu principal -->
-        <div class="content-area">
-            <div id="narrative" class="narrative">
-                C'est le début de ton aventure dans les rues animées d'Abidjan. Le soleil tape fort sur la lagune Ébrié. Autour de toi, le bruit des gbakas et des marchands ambulants crée une ambiance unique...
-            </div>
-            <div id="choices" class="choices-container">
-                <button class="choice-btn" onclick="makeChoice(0)">Prendre un petit déjeuner au maquis</button>
-                <button class="choice-btn" onclick="makeChoice(1)">Faire un tour au marché d'Adjamé</button>
-                <button class="choice-btn" onclick="makeChoice(2)">Aller voir ton ami Ibrahim</button>
-            </div>
+        <div class="bg-orange-600 px-2 py-1 rounded-full flex items-center">
+          <i class="fas fa-bolt text-purple-300 mr-1"></i><span>75%</span>
         </div>
-        
-        <!-- Inventaire -->
-        <div class="inventory-container">
-            <div class="inventory-header">
-                <h2><span>🎒</span> Inventaire (0/10)</h2>
-                <div id="inventory-capacity">Capacité: 10 objets</div>
-            </div>
-            <div id="inventory-items" class="inventory-items">
-                <!-- Les items d'inventaire seront ajoutés dynamiquement -->
-            </div>
+        <div class="bg-orange-600 px-2 py-1 rounded-full flex items-center">
+          <i class="fas fa-brain text-red-300 mr-1"></i><span>40%</span>
         </div>
+      </div>
     </div>
-    <div id="notification-area"></div>
-    <div id="game-over-screen" class="game-over" style="display: none;">
-        <div class="end-content">
-            <h2 class="end-title">Game Over!</h2>
-            <p id="game-over-text">Tu n'as pas réussi à survivre à Abidjan.</p>
-            <button class="end-btn" onclick="restartGame()">Recommencer</button>
+    <div class="flex justify-between mt-1 text-xs">
+      <div class="flex items-center">
+        <i class="fas fa-drumstick-bite text-red-500 mr-1"></i>
+        <div class="w-16 bg-gray-300 rounded-full h-1.5">
+          <div class="bg-red-500 h-1.5 rounded-full" style="width: 60%"></div>
         </div>
-    </div>
-    <div id="end-screen" class="game-over" style="display: none;">
-        <div class="end-content">
-            <h2 class="end-title">Fin de l'aventure</h2>
-            <div id="end-game-content"></div>
-            <button class="end-btn" onclick="restartGame()">Rejouer</button>
+      </div>
+      <div class="flex items-center">
+        <i class="fas fa-signal text-green-400 mr-1"></i>
+        <div class="w-16 bg-gray-300 rounded-full h-1.5">
+          <div class="bg-green-400 h-1.5 rounded-full" style="width: 85%"></div>
         </div>
+      </div>
+      <div class="flex items-center">
+        <i class="fas fa-sun text-yellow-300 mr-1"></i>
+        <span>15h30</span>
+      </div>
+      <div class="flex items-center">
+        <i class="fas fa-calendar-day text-blue-300 mr-1"></i>
+        <span>JOUR 3</span>
+      </div>
     </div>
-    <script>
-    // Mets ici tout ton code JavaScript tel qu'il était dans ton ancien index.html
-    // (Je peux aussi te coller tout le JS si tu veux, dis-le-moi)
-    </script>
+  </div>
+
+  <!-- Suite à venir -->
+  <!-- Scène principale -->
+  <div class="pt-16 pb-32 px-4 relative" style="min-height: 100vh;">
+    <!-- Fond ciel avec dégradé -->
+    <div class="absolute inset-0 bg-gradient-to-b from-blue-400 to-orange-200 opacity-30 z-0"></div>
+    
+    <!-- Sol urbain et trottoirs -->
+    <div class="absolute bottom-0 left-0 right-0 h-1/3 bg-gray-400 z-10"></div>
+    <div class="absolute bottom-0 left-0 right-0 h-1/4 bg-gray-600 z-20"></div>
+    <div class="absolute bottom-1/3 left-0 right-0 h-4 bg-yellow-800 z-30"></div>
+    
+    <!-- Gbaka en mouvement -->
+    <div class="gbaka absolute bottom-1/3 z-40" style="width: 150px;">
+      <div class="relative">
+        <div class="w-full h-10 bg-red-500 rounded-t-lg flex items-center justify-center text-white font-bold text-xs">GBAKA</div>
+        <div class="w-full h-6 bg-blue-500 rounded-b-lg flex">
+          <div class="w-2/3 h-full bg-white border-r-2 border-gray-400 flex items-center justify-center text-xs">10 FCFA</div>
+          <div class="w-1/3 h-full bg-white flex items-center justify-center text-xs">
+            <i class="fas fa-users"></i> 25
+          </div>
+        </div>
+        <div class="absolute -top-3 left-2 w-6 h-4 bg-black rounded-full"></div>
+        <div class="absolute -top-3 right-2 w-6 h-4 bg-black rounded-full"></div>
+      </div>
+    </div>
+    
+    <!-- Vendeur de rue avec bulle de texte -->
+    <div class="absolute bottom-1/4 right-4 z-50 transform translate-y-4">
+      <div class="relative">
+        <img src="https://i.imgur.com/6kL4QpK.png" alt="Vendeur" class="w-16 h-16 object-cover rounded-full border-2 border-yellow-600">
+        <div class="absolute -top-8 -right-4 speech-bubble text-xs w-24">
+          "Alloco sauce brèdes !"
+        </div>
+        <div class="absolute bottom-0 right-0 bg-orange-500 rounded-full w-6 h-6 flex items-center justify-center text-white text-xs">!</div>
+      </div>
+    </div>
+    
+    <!-- Pneus et panneaux sur la route -->
+    <div class="absolute bottom-1/4 left-4 z-50 w-8 h-8 bg-black rounded-full"></div>
+    <div class="absolute bottom-1/4 left-16 z-50 w-10 h-10 bg-gray-900 rounded-full flex items-center justify-center text-white text-xs">CLACOS</div>
+    
+    <!-- Sachet d'eau flottant -->
+    <div class="absolute bottom-1/4 left-1/4 z-50 w-6 h-8 bg-blue-100 rounded-lg flex items-center justify-center rotate-12">
+      <span class="text-blue-700 text-xs">EAU</span>
+    </div>
+  </div>
+  <!-- Texte narratif -->
+  <div class="relative z-50 bg-orange-50 bg-opacity-90 p-4 rounded-lg shadow-lg mt-4 border-l-4 border-orange-600 max-w-xl mx-auto">
+    <div class="text-sm italic text-orange-900">
+      <p class="mb-2"><span class="font-bold text-orange-700">Abidjan, Plateau. 35°C.</span> Le gbaka que vous attendiez depuis 45 minutes est enfin là. Mais comme d'hab, il est déjà plein à craquer.</p>
+      <p>Le vendeur d'alloco vous fait signe. Votre estomac gronde mais vous avez déjà dépensé 2000 FCFA aujourd'hui...</p>
+    </div>
+  </div>
+
+  <!-- Actions possibles -->
+  <div class="relative z-50 mt-6 grid grid-cols-2 gap-4 max-w-xl mx-auto">
+    <button class="bg-orange-500 hover:bg-orange-600 text-white py-3 px-4 rounded-lg flex items-center justify-center text-sm transition transform hover:scale-105 shadow-lg">
+      <i class="fas fa-bus mr-2"></i> Prendre le gbaka
+    </button>
+    <button class="bg-green-600 hover:bg-green-700 text-white py-3 px-4 rounded-lg flex items-center justify-center text-sm transition transform hover:scale-105 shadow-lg">
+      <i class="fas fa-hamburger mr-2"></i> Acheter à manger
+    </button>
+    <button class="bg-blue-500 hover:bg-blue-600 text-white py-3 px-4 rounded-lg flex items-center justify-center text-sm transition transform hover:scale-105 shadow-lg">
+      <i class="fas fa-walking mr-2"></i> Aller à pied
+    </button>
+    <button class="bg-purple-500 hover:bg-purple-600 text-white py-3 px-4 rounded-lg flex items-center justify-center text-sm transition transform hover:scale-105 shadow-lg">
+      <i class="fas fa-phone mr-2"></i> Appeler un ami
+    </button>
+  </div>
+  <!-- Menu inférieur -->
+<div class="fixed bottom-0 left-0 right-0 z-50 bg-orange-800 text-white p-2 shadow-lg">
+  <div class="flex justify-around">
+    <div class="text-center">
+      <div class="bg-orange-600 rounded-full w-10 h-10 mx-auto flex items-center justify-center mb-1">
+        <i class="fas fa-home"></i>
+      </div>
+      <span class="text-xs">Accueil</span>
+    </div>
+    <div class="text-center">
+      <div class="bg-orange-600 rounded-full w-10 h-10 mx-auto flex items-center justify-center mb-1">
+        <i class="fas fa-user"></i>
+      </div>
+      <span class="text-xs">Profil</span>
+    </div>
+    <div class="text-center relative">
+      <div class="bg-yellow-500 rounded-full w-12 h-12 mx-auto flex items-center justify-center mb-1 pulse -mt-3">
+        <i class="fas fa-gamepad text-xl"></i>
+      </div>
+      <span class="text-xs">Missions</span>
+    </div>
+    <div class="text-center">
+      <div class="bg-orange-600 rounded-full w-10 h-10 mx-auto flex items-center justify-center mb-1">
+        <i class="fas fa-map"></i>
+      </div>
+      <span class="text-xs">Carte</span>
+    </div>
+    <div class="text-center">
+      <div class="bg-orange-600 rounded-full w-10 h-10 mx-auto flex items-center justify-center mb-1">
+        <i class="fas fa-cog"></i>
+      </div>
+      <span class="text-xs">Options</span>
+    </div>
+  </div>
+</div>
+
+<!-- Notification -->
+<div id="notification" class="fixed top-16 right-2 z-50 bg-yellow-100 border-l-4 border-yellow-500 text-orange-900 px-4 py-3 rounded shadow-lg max-w-xs animate-bounce hidden" role="alert">
+  <div class="flex items-center">
+    <i class="fas fa-info-circle text-yellow-500 mr-2"></i>
+    <div>
+      <p class="text-sm" id="notif-message"></p>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Liste des notifications aléatoires
+  const messages = [
+    "Panne d'électricité dans votre quartier! -10% d'énergie",
+    "Votre ami Jean vous doit toujours 2000 FCFA",
+    "Problème réseau: MTN maintenance jusqu'à 18h",
+    "Attention: Vol de portefeuilles signalé à Adjamé",
+    "Saison des mangues! Prix réduits au marché"
+  ];
+
+  const notif = document.getElementById('notification');
+  const notifMsg = document.getElementById('notif-message');
+
+  function showRandomNotification() {
+    const randomMsg = messages[Math.floor(Math.random() * messages.length)];
+    notifMsg.textContent = randomMsg;
+    notif.classList.remove('hidden');
+
+    setTimeout(() => {
+      notif.classList.add('hidden');
+    }, 5000);
+  }
+
+  // Affiche une notification toutes les 15 secondes
+  setInterval(showRandomNotification, 15000);
+</script>
+  <script>
+  // Statistiques du joueur (initiales)
+  let stats = {
+    argent: 5000,
+    energie: 75,
+    stress: 40,
+    faim: 60,
+    reseau: 85,
+    heure: 15.5,  // 15h30 en décimal
+    jour: 3
+  };
+
+  // Mise à jour visuelle des stats dans l'interface
+  function updateStats() {
+    // Argent
+    document.querySelectorAll('.bg-orange-600 span').forEach(span => {
+      if (span.textContent.includes('FCFA')) {
+        span.textContent = stats.argent.toLocaleString('fr-FR') + " FCFA";
+      }
+    });
+
+    // Energie
+    document.querySelectorAll('.bg-orange-600 span').forEach(span => {
+      if (span.textContent.includes('%')) {
+        span.textContent = stats.energie + '%';
+      }
+    });
+
+    // Stress
+    const stressSpan = Array.from(document.querySelectorAll('.bg-orange-600 span'))
+      .find(s => s.previousElementSibling?.classList?.contains('fa-brain'));
+    if (stressSpan) stressSpan.textContent = stats.stress + '%';
+
+    // Faim barre rouge
+    const faimBar = document.querySelector('.bg-red-500.h-1\\.5');
+    if (faimBar) faimBar.style.width = stats.faim + '%';
+
+    // Réseau barre verte
+    const reseauBar = document.querySelector('.bg-green-400.h-1\\.5');
+    if (reseauBar) reseauBar.style.width = stats.reseau + '%';
+
+    // Heure
+    const heureSpan = Array.from(document.querySelectorAll('.flex.items-center span'))
+      .find(s => s.previousElementSibling?.classList?.contains('fa-sun'));
+    if (heureSpan) {
+      let h = Math.floor(stats.heure);
+      let m = (stats.heure - h) * 60;
+      heureSpan.textContent = `${h}h${m === 0 ? '00' : m}`;
+    }
+
+    // Jour
+    const jourSpan = Array.from(document.querySelectorAll('.flex.items-center span'))
+      .find(s => s.previousElementSibling?.classList?.contains('fa-calendar-day'));
+    if (jourSpan) jourSpan.textContent = `JOUR ${stats.jour}`;
+  }
+
+  // Mise à jour du texte narratif
+  const narrativeDiv = document.querySelector('.relative.z-50.bg-orange-50 > div');
+
+  // Fonction pour modifier le texte narratif
+  function setNarrative(text) {
+    narrativeDiv.innerHTML = `<p class="mb-2">${text}</p>`;
+  }
+
+  // Actions des boutons
+  document.querySelectorAll('button').forEach(button => {
+    button.addEventListener('click', () => {
+      const action = button.textContent.trim();
+
+      switch(action) {
+        case "Prendre le gbaka":
+          if (stats.argent >= 10 && stats.stress < 90) {
+            stats.argent -= 10;
+            stats.energie += 10;
+            stats.stress += 5;
+            setNarrative("Vous montez dans le gbaka bondé. Le trajet est bruyant mais vous avancez.");
+          } else {
+            setNarrative("Pas assez d'argent ou trop stressé pour prendre le gbaka.");
+          }
+          break;
+
+        case "Acheter à manger":
+          if (stats.argent >= 1000 && stats.faim > 20) {
+            stats.argent -= 1000;
+            stats.faim -= 30;
+            stats.energie += 10;
+            setNarrative("Vous achetez un délicieux alloco sauce brèdes. Miam!");
+          } else {
+            setNarrative("Pas assez d'argent ou vous n'avez pas faim.");
+          }
+          break;
+
+        case "Aller à pied":
+          stats.energie -= 20;
+          stats.stress -= 10;
+          stats.faim += 15;
+          setNarrative("Vous décidez de marcher un peu. L'air frais vous fait du bien.");
+          break;
+
+        case "Appeler un ami":
+          stats.stress -= 20;
+          setNarrative("Vous appelez un ami pour discuter. Votre stress diminue.");
+          break;
+      }
+
+      // Clamp values between 0 and 100
+      stats.energie = Math.min(100, Math.max(0, stats.energie));
+      stats.stress = Math.min(100, Math.max(0, stats.stress));
+      stats.faim = Math.min(100, Math.max(0, stats.faim));
+      stats.argent = Math.max(0, stats.argent);
+
+      updateStats();
+    });
+  });
+
+  // Initialisation de l'affichage
+  updateStats();
+</script>
+  <!-- Inventaire -->
+<div id="inventory" class="relative z-50 mt-6 p-4 bg-white bg-opacity-90 rounded-lg shadow-inner border-2 border-orange-400 max-w-md mx-auto">
+  <h2 class="font-bold text-orange-700 mb-2">Inventaire</h2>
+  <div id="inventory-items" class="flex flex-wrap gap-3">
+    <!-- Objets ajoutés ici -->
+  </div>
+</div>
+  // Inventaire initial vide
+let inventory = {};
+
+// Fonction pour afficher l'inventaire
+function renderInventory() {
+  const container = document.getElementById('inventory-items');
+  container.innerHTML = '';
+
+  if (Object.keys(inventory).length === 0) {
+    container.innerHTML = '<p class="text-gray-500 italic">Aucun objet pour l\'instant.</p>';
+    return;
+  }
+
+  for (const [item, qty] of Object.entries(inventory)) {
+    const itemDiv = document.createElement('div');
+    itemDiv.className = 'bg-yellow-100 border border-yellow-400 rounded px-3 py-1 text-sm text-yellow-800 flex items-center space-x-2';
+
+    const icon = {
+      'Sachet d\'eau': 'fas fa-tint',
+      'Alloco': 'fas fa-utensils',
+      'Gbak ticket': 'fas fa-ticket-alt'
+    }[item] || 'fas fa-box';
+
+    itemDiv.innerHTML = `<i class="${icon}"></i> <span>${item} x${qty}</span>`;
+    container.appendChild(itemDiv);
+  }
+}
+
+// Fonction pour ajouter un objet dans l'inventaire
+function addToInventory(item) {
+  if (inventory[item]) {
+    inventory[item]++;
+  } else {
+    inventory[item] = 1;
+  }
+  renderInventory();
+}
+
+// Interaction avec le sachet d'eau dans la scène
+const waterSachet = document.querySelector('.absolute.bottom-1\\/4.left-1\\/4');
+waterSachet.style.cursor = 'pointer';
+waterSachet.title = "Cliquez pour ramasser le sachet d'eau";
+
+waterSachet.addEventListener('click', () => {
+  addToInventory('Sachet d\'eau');
+  setNarrative("Vous avez ramassé un sachet d'eau. Utile pour calmer la soif !");
+  waterSachet.remove(); // Enlève l'objet visuellement après ramassage
+});
+  function setNarration(text) {
+        document.getElementById('narration').textContent = text;
+    }
+
+    function clearChoices() {
+        const choicesDiv = document.getElementById('choices');
+        choicesDiv.innerHTML = '';
+    }
+
+    function addChoice(text, callback) {
+        const choicesDiv = document.getElementById('choices');
+        const btn = document.createElement('button');
+        btn.textContent = text;
+        btn.className = 'bg-orange-500 hover:bg-orange-600 text-white py-2 rounded transition duration-200';
+        btn.onclick = () => {
+            callback();
+            updateStats();
+        };
+        choicesDiv.appendChild(btn);
+    }
+
+    // Définition des scènes
+    const scenes = {
+        start: () => {
+            setNarration("Abidjan, Plateau. 35°C. Le gbaka que vous attendiez depuis 45 minutes est enfin là. Mais il est déjà plein à craquer.");
+            clearChoices();
+            addChoice("Prendre le gbaka", () => {
+                if(state.argent >= 10 && state.energie >= 20) {
+                    state.argent -= 10;
+                    state.energie -= 20;
+                    state.stress -= 10;
+                    state.scene = 'gbaka';
+                    scenes.gbaka();
+                } else {
+                    setNarration("Vous n'avez pas assez d'argent ou d'énergie pour prendre le gbaka.");
+                }
+            });
+            addChoice("Aller à pied", () => {
+                state.energie -= 40;
+                state.stress += 10;
+                state.faim += 10;
+                state.scene = 'marche';
+                scenes.marche();
+            });
+            addChoice("Acheter à manger", () => {
+                if(state.argent >= 2000) {
+                    state.argent -= 2000;
+                    state.faim -= 50;
+                    state.stress -= 20;
+                    state.scene = 'manger';
+                    scenes.manger();
+                } else {
+                    setNarration("Vous n'avez pas assez d'argent pour acheter à manger.");
+                }
+            });
+            addChoice("Appeler un ami", () => {
+                state.stress -= 30;
+                state.scene = 'ami';
+                scenes.ami();
+            });
+        },
+
+        gbaka: () => {
+            setNarration("Vous êtes dans le gbaka, serré mais en route vers votre destination. L'ambiance est animée.");
+            clearChoices();
+            addChoice("Descendre au prochain arrêt", () => {
+                state.energie -= 10;
+                state.scene = 'arrive';
+                scenes.arrive();
+            });
+            addChoice("Rester dans le gbaka", () => {
+                state.stress += 5;
+                setNarration("Le trajet est long et la chaleur pèse. Vous espérez arriver vite.");
+            });
+        },
+
+        marche: () => {
+            setNarration("Vous décidez de marcher. La chaleur vous fatigue, mais vous appréciez l'air frais et la musique des rues.");
+            clearChoices();
+            addChoice("Continuer à marcher", () => {
+                state.energie -= 20;
+                state.faim += 5;
+                setNarration("Vous avancez dans les rues d'Abidjan, observant la vie urbaine.");
+            });
+            addChoice("S'arrêter pour boire", () => {
+                if(state.argent >= 100) {
+                    state.argent -= 100;
+                    state.energie += 15;
+                    setNarration("Vous achetez une bouteille d'eau fraîche et vous sentez revitalisé.");
+                } else {
+                    setNarration("Vous n'avez pas assez d'argent pour acheter de l'eau.");
+                }
+            });
+            addChoice("Retourner au gbaka", () => {
+                state.scene = 'start';
+                scenes.start();
+            });
+        },
+
+        manger: () => {
+            setNarration("Vous dégustez un alloco bien chaud, votre faim diminue et votre moral remonte.");
+            clearChoices();
+            addChoice("Retourner à la station de gbaka", () => {
+                state.scene = 'start';
+                scenes.start();
+            });
+            addChoice("Rester et discuter avec le vendeur", () => {
+                state.stress -= 10;
+                setNarration("Vous échangez quelques mots avec le vendeur, profitant de ce moment de calme.");
+            });
+        },
+
+        ami: () => {
+            setNarration("Vous appelez un ami qui vous rassure et vous conseille de ne pas stresser.");
+            clearChoices();
+            addChoice("Retourner à la station de gbaka", () => {
+                state.scene = 'start';
+                scenes.start();
+            });
+            addChoice("Finir l'appel et réfléchir", () => {
+                state.stress -= 10;
+                setNarration("Vous raccrochez, un peu plus calme et prêt à continuer.");
+            });
+        },
+
+        arrive: () => {
+            setNarration("Vous êtes arrivé à destination. La journée continue avec de nouveaux défis.");
+            clearChoices();
+            addChoice("Recommencer la journée", () => {
+                state.argent = 5000;
+                state.energie = 75;
+                state.stress = 40;
+                state.faim = 60;
+                state.scene = 'start';
+                scenes.start();
+            });
+            addChoice("Quitter le jeu", () => {
+                setNarration("Merci d'avoir joué à Game Over CI !");
+                clearChoices();
+            });
+        }
+    };
+
+    // Initialisation
+    updateStats();
+    scenes.start();
+</script>
+
 </body>
 </html>
