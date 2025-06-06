@@ -19,14 +19,12 @@
             --success: #06d6a0;
             --danger: #ef476f;
         }
-
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
-
         body {
             background-color: var(--background);
             color: var(--text);
@@ -39,32 +37,27 @@
             display: flex;
             flex-direction: column;
         }
-
         .game-container {
             display: flex;
             flex-direction: column;
             height: 100%;
         }
-
         .header {
             border-bottom: 1px solid var(--border);
             padding-bottom: 10px;
             margin-bottom: 15px;
         }
-
         .title {
             font-size: 1.8rem;
             text-align: center;
             margin-bottom: 5px;
             color: var(--primary-color);
         }
-
         .day-counter {
             text-align: center;
             font-size: 1.1rem;
             margin-bottom: 10px;
         }
-
         .stats-container {
             display: flex;
             flex-wrap: wrap;
@@ -72,7 +65,6 @@
             gap: 5px;
             margin-bottom: 15px;
         }
-
         .stat {
             flex: 1 0 48%;
             background-color: white;
@@ -82,18 +74,15 @@
             min-width: 140px;
             margin-bottom: 8px;
         }
-
         .stat-name {
             display: flex;
             align-items: center;
             margin-bottom: 5px;
             font-weight: 500;
         }
-
         .stat-name span {
             margin-right: 5px;
         }
-
         .stat-bar {
             height: 8px;
             background-color: #e0e0e0;
@@ -101,19 +90,16 @@
             margin-bottom: 5px;
             overflow: hidden;
         }
-
         .stat-value {
             height: 100%;
             transition: width 0.5s ease-in-out;
         }
-
         .stat-numeric {
             display: flex;
             justify-content: space-between;
             font-size: 0.9rem;
             color: #666;
         }
-
         .content-area {
             flex-grow: 1;
             overflow-y: auto;
@@ -125,18 +111,15 @@
             display: flex;
             flex-direction: column;
         }
-
         .narrative {
             font-size: 1.1rem;
             margin-bottom: 20px;
             flex-grow: 1;
         }
-
         .choices-container {
             display: grid;
             gap: 12px;
         }
-
         .choice-btn {
             background-color: var(--primary-color);
             border: none;
@@ -149,32 +132,27 @@
             text-align: left;
             box-shadow: 0 2px 4px var(--light-shadow);
         }
-
         .choice-btn:hover {
             background-color: var(--button-hover);
             transform: translateY(-2px);
         }
-
         .inventory-container {
             background-color: var(--inventory-bg);
             border-radius: 8px;
             padding: 15px;
             box-shadow: 0 2px 5px var(--light-shadow);
         }
-
         .inventory-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 10px;
         }
-
         .inventory-items {
             display: flex;
             flex-wrap: wrap;
             gap: 10px;
         }
-
         .inventory-item {
             background-color: white;
             border-radius: 8px;
@@ -184,12 +162,10 @@
             align-items: center;
             min-width: 120px;
         }
-
         .inventory-emoji {
             margin-right: 8px;
             font-size: 1.2rem;
         }
-
         .notification {
             position: fixed;
             top: 20px;
@@ -202,29 +178,24 @@
             opacity: 0;
             z-index: 1000;
         }
-
         @keyframes fadeInOut {
             0% { opacity: 0; top: 10px; }
             10% { opacity: 1; top: 20px; }
             90% { opacity: 1; top: 20px; }
             100% { opacity: 0; top: 10px; }
         }
-
         .notification-success {
             background-color: var(--success);
             color: white;
         }
-
         .notification-danger {
             background-color: var(--danger);
             color: white;
         }
-
         .notification-warning {
             background-color: var(--stat-medium);
             color: black;
         }
-
         .game-over, .end-screen {
             position: fixed !important;
             top: 0; left: 0; right: 0; bottom: 0;
@@ -238,7 +209,6 @@
             text-align: center;
             overflow-y: auto;
         }
-
         .end-content {
             background-color: var(--background);
             border-radius: 8px;
@@ -247,13 +217,11 @@
             max-height: 90vh;
             overflow-y: auto;
         }
-
         .end-title {
             font-size: 2rem;
             color: var(--primary-color);
             margin-bottom: 20px;
         }
-
         .end-btn {
             background-color: var(--primary-color);
             color: white;
@@ -265,30 +233,25 @@
             cursor: pointer;
             transition: all 0.2s;
         }
-
         .end-btn:hover {
             background-color: var(--button-hover);
         }
-
         .npc-container {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
             gap: 15px;
             margin-top: 20px;
         }
-
         .npc-item {
             background-color: white;
             border-radius: 8px;
             padding: 15px;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
-
         .npc-name {
             font-weight: 600;
             margin-bottom: 8px;
         }
-
         /* ==== CORRECTIONS MOBILE ==== */
         @media (max-width: 600px) {
             body {
@@ -332,12 +295,10 @@
                 font-size: 0.96rem;
             }
             * {
-                -webkit-tap-highlight-color: transparent;
+                --color: transparent;
                 -webkit-touch-callout: none;
             }
         }
-
-        /* Pour éviter la superposition en mode paysage */
         @media (max-width: 600px) and (orientation: landscape) {
             .game-container {
                 display: flex;
@@ -349,9 +310,6 @@
                 max-height: 40vw;
             }
         }
-        /* =========================== */
-
-        /* Réduire l'espace vertical sur petits écrans */
         @media (max-height: 650px) {
             .header {
                 margin-bottom: 8px;
@@ -364,11 +322,122 @@
     </style>
 </head>
 <body>
-<!-- ... Le reste de ton HTML reste inchangé ... -->
-<!--
-  Pour garder ce message court, copie-colle ici
-  tout le reste du body tel qu’il est dans ton fichier original (divs, scripts, etc.) 
-  car la correction principale est dans la balise <style> ci-dessus.
--->
+    <div class="game-container">
+        <!-- Barre de statut -->
+        <div class="header">
+            <h1 class="title">Game Over CI</h1>
+            <div class="day-counter">Jour 1/7 - Après-midi</div>
+            <div class="stats-container">
+                <div class="stat">
+                    <div class="stat-name"><span>💰</span> Argent</div>
+                    <div class="stat-bar">
+                        <div id="money-bar" class="stat-value" style="width: 80%; background-color: var(--stat-high);"></div>
+                    </div>
+                    <div class="stat-numeric">
+                        <span>0 FCFA</span>
+                        <span>10,000 FCFA</span>
+                        <span id="money-value">2,500</span>
+                    </div>
+                </div>
+                <div class="stat">
+                    <div class="stat-name"><span>🍗</span> Faim</div>
+                    <div class="stat-bar">
+                        <div id="hunger-bar" class="stat-value" style="width: 60%; background-color: var(--stat-medium);"></div>
+                    </div>
+                    <div class="stat-numeric">
+                        <span>Affamé</span>
+                        <span>Rassasié</span>
+                        <span id="hunger-value">6/10</span>
+                    </div>
+                </div>
+                <div class="stat">
+                    <div class="stat-name"><span>💤</span> Énergie</div>
+                    <div class="stat-bar">
+                        <div id="energy-bar" class="stat-value" style="width: 70%; background-color: var(--stat-high);"></div>
+                    </div>
+                    <div class="stat-numeric">
+                        <span>Épuisé</span>
+                        <span>Énergique</span>
+                        <span id="energy-value">7/10</span>
+                    </div>
+                </div>
+                <div class="stat">
+                    <div class="stat-name"><span>😰</span> Stress</div>
+                    <div class="stat-bar">
+                        <div id="stress-bar" class="stat-value" style="width: 30%; background-color: var(--stat-high);"></div>
+                    </div>
+                    <div class="stat-numeric">
+                        <span>Calme</span>
+                        <span>Stressé</span>
+                        <span id="stress-value">3/10</span>
+                    </div>
+                </div>
+                <div class="stat">
+                    <div class="stat-name"><span>⚖️</span> Moralité</div>
+                    <div class="stat-bar">
+                        <div id="morality-bar" class="stat-value" style="width: 90%; background-color: var(--stat-high);"></div>
+                    </div>
+                    <div class="stat-numeric">
+                        <span>Corrompu</span>
+                        <span>Intègre</span>
+                        <span id="morality-value">9/10</span>
+                    </div>
+                </div>
+                <div class="stat">
+                    <div class="stat-name"><span>📱</span> Social</div>
+                    <div class="stat-bar">
+                        <div id="social-bar" class="stat-value" style="width: 50%; background-color: var(--stat-medium);"></div>
+                    </div>
+                    <div class="stat-numeric">
+                        <span>Isolé</span>
+                        <span>Populaire</span>
+                        <span id="social-value">5/10</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Zone de contenu principal -->
+        <div class="content-area">
+            <div id="narrative" class="narrative">
+                C'est le début de ton aventure dans les rues animées d'Abidjan. Le soleil tape fort sur la lagune Ébrié. Autour de toi, le bruit des gbakas et des marchands ambulants crée une ambiance unique...
+            </div>
+            <div id="choices" class="choices-container">
+                <button class="choice-btn" onclick="makeChoice(0)">Prendre un petit déjeuner au maquis</button>
+                <button class="choice-btn" onclick="makeChoice(1)">Faire un tour au marché d'Adjamé</button>
+                <button class="choice-btn" onclick="makeChoice(2)">Aller voir ton ami Ibrahim</button>
+            </div>
+        </div>
+        
+        <!-- Inventaire -->
+        <div class="inventory-container">
+            <div class="inventory-header">
+                <h2><span>🎒</span> Inventaire (0/10)</h2>
+                <div id="inventory-capacity">Capacité: 10 objets</div>
+            </div>
+            <div id="inventory-items" class="inventory-items">
+                <!-- Les items d'inventaire seront ajoutés dynamiquement -->
+            </div>
+        </div>
+    </div>
+    <div id="notification-area"></div>
+    <div id="game-over-screen" class="game-over" style="display: none;">
+        <div class="end-content">
+            <h2 class="end-title">Game Over!</h2>
+            <p id="game-over-text">Tu n'as pas réussi à survivre à Abidjan.</p>
+            <button class="end-btn" onclick="restartGame()">Recommencer</button>
+        </div>
+    </div>
+    <div id="end-screen" class="game-over" style="display: none;">
+        <div class="end-content">
+            <h2 class="end-title">Fin de l'aventure</h2>
+            <div id="end-game-content"></div>
+            <button class="end-btn" onclick="restartGame()">Rejouer</button>
+        </div>
+    </div>
+    <script>
+    // Mets ici tout ton code JavaScript tel qu'il était dans ton ancien index.html
+    // (Je peux aussi te coller tout le JS si tu veux, dis-le-moi)
+    </script>
 </body>
 </html>
