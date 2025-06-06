@@ -226,19 +226,17 @@
         }
 
         .game-over, .end-screen {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: rgba(0, 0, 0, 0.85);
+            position: fixed !important;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: rgba(0, 0, 0, 0.90);
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            z-index: 2000;
+            z-index: 9999 !important;
             padding: 20px;
             text-align: center;
+            overflow-y: auto;
         }
 
         .end-content {
@@ -291,56 +289,67 @@
             margin-bottom: 8px;
         }
 
+        /* ==== CORRECTIONS MOBILE ==== */
         @media (max-width: 600px) {
             body {
-                padding: 10px 8px;
+                padding: 10px 2px;
                 overflow-x: hidden;
             }
-
-            .stat {
-                flex: 1 0 100%;
-                padding: 8px;
-            }
-            
-            .choice-btn {
-                padding: 12px;
-                font-size: 0.95rem;
-                margin: 0 5px;
-            }
-            
-            .inventory-item {
-                flex: 1 0 100%;
-                padding: 6px;
-                min-width: auto;
-            }
-
-            .narrative {
-                font-size: 1rem;
-                margin-bottom: 15px;
-            }
-
-            .day-counter {
-                font-size: 1rem;
-            }
-
-            .title {
-                font-size: 1.5rem;
-            }
-
-            .content-area {
-                padding: 10px;
-            }
-
             .game-container {
                 min-height: 100vh;
+                height: auto;
+                flex-direction: column;
             }
-
-            /* Empêcher le surlignage bleu sur clic mobile */
+            .content-area,
+            .inventory-container {
+                padding: 8px;
+                margin-bottom: 10px;
+                max-height: 40vh;
+                overflow-y: auto;
+            }
+            .header {
+                padding-bottom: 5px;
+                margin-bottom: 8px;
+                position: static;
+            }
+            .stat {
+                flex: 1 0 100%;
+                padding: 6px;
+                min-width: unset;
+                font-size: 0.92rem;
+            }
+            .narrative {
+                font-size: 1rem;
+                margin-bottom: 10px;
+            }
+            .choice-btn {
+                padding: 11px;
+                font-size: 0.96rem;
+            }
+            .inventory-item {
+                padding: 4px;
+                min-width: 85px;
+                font-size: 0.96rem;
+            }
             * {
                 -webkit-tap-highlight-color: transparent;
                 -webkit-touch-callout: none;
             }
         }
+
+        /* Pour éviter la superposition en mode paysage */
+        @media (max-width: 600px) and (orientation: landscape) {
+            .game-container {
+                display: flex;
+                flex-direction: column;
+                height: auto;
+            }
+            .content-area,
+            .inventory-container {
+                max-height: 40vw;
+            }
+        }
+        /* =========================== */
 
         /* Réduire l'espace vertical sur petits écrans */
         @media (max-height: 650px) {
@@ -348,730 +357,18 @@
                 margin-bottom: 8px;
                 padding-bottom: 5px;
             }
-
             .narrative {
                 margin-bottom: 10px;
-            }
-        }
-
-        /* Rotation paysage */
-        @media screen and (max-width: 600px) and (orientation: landscape) {
-            .game-container {
-                display: grid;
-                grid-template-columns: 1fr 1fr;
-                gap: 10px;
-            }
-
-            .header {
-                grid-column: span 2;
-                padding-bottom: 5px;
-                margin-bottom: 0;
-            }
-
-            .content-area {
-                grid-column: 1;
-                grid-row: 2;
-                margin-bottom: 0;
-            }
-
-            .inventory-container {
-                grid-column: 2;
-                grid-row: 2;
             }
         }
     </style>
 </head>
 <body>
-    <div class="game-container">
-        <!-- Barre de statut -->
-        <div class="header">
-            <h1 class="title">Game Over CI</h1>
-            <div class="day-counter">Jour 1/7 - Après-midi</div>
-            <div class="stats-container">
-                <div class="stat">
-                    <div class="stat-name"><span>💰</span> Argent</div>
-                    <div class="stat-bar">
-                        <div id="money-bar" class="stat-value" style="width: 80%; background-color: var(--stat-high);"></div>
-                    </div>
-                    <div class="stat-numeric">
-                        <span>0 FCFA</span>
-                        <span>10,000 FCFA</span>
-                        <span id="money-value">2,500</span>
-                    </div>
-                </div>
-                <div class="stat">
-                    <div class="stat-name"><span>🍗</span> Faim</div>
-                    <div class="stat-bar">
-                        <div id="hunger-bar" class="stat-value" style="width: 60%; background-color: var(--stat-medium);"></div>
-                    </div>
-                    <div class="stat-numeric">
-                        <span>Affamé</span>
-                        <span>Rassasié</span>
-                        <span id="hunger-value">6/10</span>
-                    </div>
-                </div>
-                <div class="stat">
-                    <div class="stat-name"><span>💤</span> Énergie</div>
-                    <div class="stat-bar">
-                        <div id="energy-bar" class="stat-value" style="width: 70%; background-color: var(--stat-high);"></div>
-                    </div>
-                    <div class="stat-numeric">
-                        <span>Épuisé</span>
-                        <span>Énergique</span>
-                        <span id="energy-value">7/10</span>
-                    </div>
-                </div>
-                <div class="stat">
-                    <div class="stat-name"><span>😰</span> Stress</div>
-                    <div class="stat-bar">
-                        <div id="stress-bar" class="stat-value" style="width: 30%; background-color: var(--stat-high);"></div>
-                    </div>
-                    <div class="stat-numeric">
-                        <span>Calme</span>
-                        <span>Stressé</span>
-                        <span id="stress-value">3/10</span>
-                    </div>
-                </div>
-                <div class="stat">
-                    <div class="stat-name"><span>⚖️</span> Moralité</div>
-                    <div class="stat-bar">
-                        <div id="morality-bar" class="stat-value" style="width: 90%; background-color: var(--stat-high);"></div>
-                    </div>
-                    <div class="stat-numeric">
-                        <span>Corrompu</span>
-                        <span>Intègre</span>
-                        <span id="morality-value">9/10</span>
-                    </div>
-                </div>
-                <div class="stat">
-                    <div class="stat-name"><span>📱</span> Social</div>
-                    <div class="stat-bar">
-                        <div id="social-bar" class="stat-value" style="width: 50%; background-color: var(--stat-medium);"></div>
-                    </div>
-                    <div class="stat-numeric">
-                        <span>Isolé</span>
-                        <span>Populaire</span>
-                        <span id="social-value">5/10</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Zone de contenu principal -->
-        <div class="content-area">
-            <div id="narrative" class="narrative">
-                C'est le début de ton aventure dans les rues animées d'Abidjan. Le soleil tape fort sur la lagune Ébrié. Autour de toi, le bruit des gbakas et des marchands ambulants crée une symphonie du quotidien. Tu dois survivre pendant 7 jours dans cette ville intense. Les choix que tu feras détermineront ton sort. Prêt?
-            </div>
-            
-            <div id="choices" class="choices-container">
-                <button class="choice-btn" onclick="makeChoice(0)">Prendre un petit déjeuner au maquis</button>
-                <button class="choice-btn" onclick="makeChoice(1)">Faire un tour au marché d'Adjamé</button>
-                <button class="choice-btn" onclick="makeChoice(2)">Aller voir ton ami Ibrahim</button>
-            </div>
-        </div>
-        
-        <!-- Inventaire -->
-        <div class="inventory-container">
-            <div class="inventory-header">
-                <h2><span>🎒</span> Inventaire (0/10)</h2>
-                <div id="inventory-capacity">Capacité: 10 objets</div>
-            </div>
-            <div id="inventory-items" class="inventory-items">
-                <!-- Les items d'inventaire seront ajoutés dynamiquement -->
-            </div>
-        </div>
-    </div>
-
-    <div id="notification-area"></div>
-    <div id="game-over-screen" class="game-over" style="display: none;">
-        <div class="end-content">
-            <h2 class="end-title">Game Over!</h2>
-            <p id="game-over-text">Tu n'as pas réussi à survivre à Abidjan.</p>
-            <button class="end-btn" onclick="restartGame()">Recommencer</button>
-        </div>
-    </div>
-    <div id="end-screen" class="game-over" style="display: none;">
-        <div class="end-content">
-            <h2 class="end-title">Fin de l'aventure</h2>
-            <div id="end-game-content"></div>
-            <button class="end-btn" onclick="restartGame()">Rejouer</button>
-        </div>
-    </div>
-
-    <script>
-        // État du jeu
-        const gameState = {
-            day: 1,
-            phase: 1, // 1: Matin, 2: Après-midi, 3: Soir
-            money: 2500,
-            hunger: 6,
-            energy: 7,
-            stress: 3,
-            morality: 9,
-            social: 5,
-            inventory: [],
-            npcRelationships: {
-                Ibrahim: { level: 6, title: "Ami" },
-                Maman: { level: 8, title: "Famille" },
-                Rival: { level: 2, title: "Ennemi" },
-                Vendeuse: { level: 4, title: "Connaissance" },
-                ConducteurGbaka: { level: 5, title: "Connaissance" }
-            },
-            events: {},
-            completedQuests: [],
-            currentEvent: null
-        };
-
-        // Catalogue des PNJs
-        const npcs = [
-            {
-                id: 'Ibrahim',
-                name: 'Ibrahim',
-                emoji: '👦🏾',
-                description: "Ton ami d'enfance, toujours prêt à aider mais qui a parfois de mauvaises idées.",
-                minRelationshipLevel: 4
-            },
-            {
-                id: 'Maman',
-                name: 'Maman',
-                emoji: '👩🏾',
-                description: "Ta mère, qui t'aide quand elle peut mais qui est déjà surchargée.",
-                minRelationshipLevel: 5
-            },
-            {
-                id: 'Rival',
-                name: 'Koffi',
-                emoji: '👊🏾',
-                description: "Ton rival du quartier, toujours prêt à t'embêter.",
-                minRelationshipLevel: 0
-            },
-            {
-                id: 'Vendeuse',
-                name: 'Aïcha',
-                emoji: '👵🏾',
-                description: "Vendeuse de beignets au coin de la rue. Elle ne fait pas de crédit mais elle est bien informée.",
-                minRelationshipLevel: 2
-            },
-            {
-                id: 'ConducteurGbaka',
-                name: 'Patrice',
-                emoji: '👨🏾‍✈️',
-                description: "Conducteur du gbaka qui fait la ligne Adjamé-Yopougon. Tu le connais assez bien.",
-                minRelationshipLevel: 3
-            }
-        ];
-
-        // Catalogue d'objets
-        const items = [
-            { id: 'water', name: 'Sachet d\'eau', emoji: '💧', price: 200, effect: { hunger: 1, energy: 1 }, description: 'De l\'eau fraîche en sachet, indispensable par cette chaleur.' },
-            { id: 'attiéké', name: 'Attiéké', emoji: '🍛', price: 1000, effect: { hunger: 3 }, description: 'Le plat favori des Ivoiriens, avec poisson grillé et alloco.' },
-            { id: 'phone', name: 'Téléphone', emoji: '📱', price: 15000, effect: { social: 2 }, description: 'Un vieux smartphone avec peu de crédit, mais indispensable pour rester connecté.' },
-            { id: 'meds', name: 'Médicaments', emoji: '💊', price: 5000, effect: { energy: 3, stress: -2 }, description: 'Des médicaments pour soigner un mal de tête ou une petite fièvre.' },
-            { id: 'money', name: 'Argent caché', emoji: '💵', price: 0, effect: { money: 2000 }, description: 'Une petite réserve d\'argent pour les urgences.' },
-            { id: 'cigarettes', name: 'Cigarettes', emoji: '🚬', price: 1500, effect: { stress: -3, morality: -1 }, description: 'Un paquet de cigarettes, utile pour calmer les nerfs.' },
-            { id: 'knife', name: 'Couteau', emoji: '🔪', price: 5000, effect: { stress: -1, morality: -2 }, description: 'Un couteau de poche, pour se défendre ou faire la loi.' }
-        ];
-
-        // Liste d'événements
-        const events = {
-            start: {
-                text: "C'est le début de ton aventure dans les rues animées d'Abidjan. Le soleil tape fort sur la lagune Ébrié. Autour de toi, le bruit des gbakas et des marchands ambulants crée une symphonie du quotidien.",
-                choices: [
-                    { text: "Prendre un petit déjeuner au maquis", effect: { money: -500, hunger: 3 }, next: "street1" },
-                    { text: "Faire un tour au marché d'Adjamé", effect: { hunger: -1, energy: -1 }, next: "market1" },
-                    { text: "Aller voir ton ami Ibrahim", effect: { social: 1 }, next: "friend1" }
-                ]
-            },
-            street1: {
-                text: "Dans le maquis, l'odeur de l'attiéké fraîchement préparé te met l'eau à la bouche. Le gérant te sourit en te voyant arriver.",
-                choices: [
-                    { text: "Commander attiéké avec poisson (500 FCFA)", effect: { hunger: 3, money: -500 }, next: "randomEvent" },
-                    { text: "Prendre juste des beignets (200 FCFA)", effect: { hunger: 1, money: -200 }, next: "randomEvent" },
-                    { text: "Partir sans rien acheter", next: "randomEvent" }
-                ]
-            },
-            market1: {
-                text: "Le marché d'Adjamé est déjà bondé malgré l'heure matinale. Les vendeurs ambulants crient leurs offres et les clients négocient avec passion.",
-                choices: [
-                    { text: "Acheter des fruits pour plus tard", effect: { money: -300, hunger: 2 }, next: "market2" },
-                    { text: "Essayer de trouver un petit boulot", effect: { energy: -2, stress: 1 }, next: "randomEvent" },
-                    { text: "Flâner dans les allées", effect: { stress: -1, energy: -1 }, next: "randomEvent" }
-                ]
-            },
-            market2: {
-                text: "En passant devant une échoppe de vêtements, tu remarques un portefeuille tombé par terre.",
-                choices: [
-                    { text: "Le ramasser et chercher le propriétaire", effect: { morality: 1, social: 1 }, next: "randomEvent" },
-                    { text: "Prendre l'argent et jeter le portefeuille", effect: { money: 1000, morality: -2 }, next: "randomEvent" },
-                    { text: "Faire comme si tu n'as rien vu", next: "randomEvent" }
-                ]
-            },
-            friend1: {
-                text: "Ibrahim est devant chez lui, en train de réparer sa vieille mobylette. Il te fait signe de venir en voyant ton air affamé.",
-                choices: [
-                    { text: "Demander s'il a quelque chose à manger", effect: { hunger: 2 }, next: "friend2" },
-                    { text: "Lui proposer d'aller voir des amis", effect: { social: 1, energy: -1 }, next: "randomEvent" },
-                    { text: "Lui parler d'un petit boulot qu'on t'a proposé", effect: { stress: -1 }, next: "randomEvent" }
-                ]
-            },
-            friend2: {
-                text: "Ibrahim rigole: 'Toi toujours faim comme un têtu! Viens, ma mère a préparé du garba.' Tu entres dans la maison modeste mais accueillante.",
-                choices: [
-                    { text: "Manger avec appétit", effect: { hunger: 3, social: 1 }, next: "randomEvent" },
-                    { text: "Juste grignoter un peu", effect: { hunger: 1 }, next: "randomEvent" },
-                    { text: "Parler du dernier match avant de manger", effect: { social: 2, hunger: -1 }, next: "randomEvent" }
-                ]
-            },
-            policeEvent: {
-                text: "Un groupe de policiers bloque la route pour un contrôle. Ils semblent particulièrement sévères ce matin.",
-                choices: [
-                    { text: "Montrer tes papiers calmement", effect: { stress: 1 }, next: "randomEvent" },
-                    { text: "Prétendre que tu as oublié tes papiers", effect: { stress: 2 }, next: "police1" },
-                    { text: "Faire un détour pour éviter le contrôle", effect: { energy: -2 }, next: "randomEvent" }
-                ]
-            },
-            police1: {
-                text: "Le policier te regarde avec suspicion: 'Comment ça tu n'as pas tes papiers? Tu dois me suivre au commissariat.'",
-                choices: [
-                    { text: "Tenter de négocier discrètement", effect: { money: -1000, morality: -1 }, next: "randomEvent" },
-                    { text: "Suivre au commissariat", effect: { stress: 3, energy: -3 }, next: "randomEvent" },
-                    { text: "Soudoyer l'officier (1000 FCFA)", effect: { money: -1000, morality: -2 }, next: "randomEvent" }
-                ]
-            },
-            thiefEvent: {
-                text: "Alors que tu traverses une ruelle, deux individus te bloquent le passage. 'Eh, petit! Tu ne passes pas sans payer!'",
-                choices: [
-                    { text: "Tenter de discuter", effect: { stress: 2 }, next: "randomEvent" },
-                    { text: "Faire le fier", effect: { stress: 3, energy: -2 }, next: "randomEvent" },
-                    { text: "Donner ce que tu as dans les poches", effect: { money: -500, stress: 1 }, next: "randomEvent" }
-                ]
-            }
-        };
-
-        // Événements aléatoires
-        const randomEvents = [
-            {
-                id: 'gbaka',
-                text: "Le gbaka qui devait t'amener chez toi est bondé à craquer. Les voyageurs sont serrés comme des sardines.",
-                choices: [
-                    { text: "Attendre le prochain bus", effect: { energy: -1 }, next: "continue" },
-                    { text: "Monter malgré tout", effect: { energy: -2, stress: 2 }, next: "continue" },
-                    { text: "Prendre un taxi-moto", effect: { money: -500 }, next: "continue" }
-                ]
-            },
-            {
-                id: 'rain',
-                text: "Un orage tropical éclate soudainement. La pluie tombe avec une telle force que les rues se transforment en torrents.",
-                choices: [
-                    { text: "T'attendre sous un abri", effect: { energy: -1, hunger: -1 }, next: "continue" },
-                    { text: "Prendre un taxi", effect: { money: -800 }, next: "continue" },
-                    { text: "Contourner par les ruelles couvertes", effect: { energy: -2 }, next: "continue" }
-                ]
-            },
-            {
-                id: 'streetFight',
-                text: "Tu tombes sur une bagarre entre deux groupes de jeunes. Les coups volent et le ton monte.",
-                choices: [
-                    { text: "Tenter de calmer les esprits", effect: { energy: -2, social: 1 }, next: "continue" },
-                    { text: "Rejoindre ton groupe", effect: { stress: 3, energy: -3 }, next: "continue" },
-                    { text: "Faire demi-tour rapidement", effect: { stress: 1 }, next: "continue" }
-                ]
-            },
-            {
-                id: 'streetVendor',
-                text: "Tu croises une vieille vendeuse ambulante qui te propose des mangues à moitié prix parce qu'elle aime ton visage.",
-                choices: [
-                    { text: "Acheter deux mangues", effect: { hunger: 1, money: -300, morality: 1 }, next: "continue" },
-                    { text: "Négocier pour en avoir plus", effect: { money: -200, hunger: 1, morality: -1 }, next: "continue" },
-                    { text: "Refuser poliment", next: "continue" }
-                ]
-            },
-            {
-                id: 'familyEvent',
-                text: "Ta mère t'envoie un SMS: 'Rentre vite, il y a un problème avec ton frère.' Le message semble urgent.",
-                choices: [
-                    { text: "Annuler tout et rentrer immédiatement", effect: { energy: -3, social: -2 }, next: "family1" },
-                    { text: "Terminer ce que tu fais d'abord", effect: { stress: 1, morality: -1 }, next: "randomEvent" },
-                    { text: "Envoyer de l'argent pour aider", effect: { money: -1000 }, next: "continue" }
-                ]
-            },
-            {
-                id: 'family1',
-                text: "À la maison, tu trouves ton petit frère malade. Ta mère est inquiète, elle n'a pas de quoi payer les médicaments.",
-                choices: [
-                    { text: "Faire la quête chez les voisins", effect: { social: -2, morality: 1, energy: -2 }, next: "continue" },
-                    { text: "Utiliser ton argent pour les médicaments", effect: { money: -3000, morality: 2 }, next: "continue" },
-                    { text: "Contacter un ami médecin", effect: { social: 1 }, next: "continue" }
-                ]
-            },
-            {
-                id: 'friendRequest',
-                text: "Ibrahim t'appelle, paniqué. Il a besoin de 2000 FCFA rapidement pour régler un problème. Il promet de te rembourser.",
-                choices: [
-                    { text: "Lui donner l'argent sans poser de questions", effect: { money: -2000, social: 2, morality: 1 }, next: "continue" },
-                    { text: "Lui prêter mais avec méfiance", effect: { money: -2000, social: 1 }, next: "continue" },
-                    { text: "Demander des détails sur le problème", effect: { social: -1 }, next: "friendRequestDetails" }
-                ]
-            },
-            {
-                id: 'friendRequestDetails',
-                text: "Ibrahim hésite puis avoue qu'il a perdu de l'argent au jeu. Il doit payer aujourd'hui pour éviter des problèmes.",
-                choices: [
-                    { text: "Le réprimander mais payer", effect: { money: -2000, morality: -1, social: 1 }, next: "continue" },
-                    { text: "Refuser de payer", effect: { social: -2 }, next: "continue" },
-                    { text: "L'aider à trouver une solution", effect: { energy: -2, social: 1 }, next: "continue" }
-                ]
-            }
-        ];
-
-        // Fin de jeu
-        const endings = [
-            {
-                title: "Le Survivant",
-                desc: "Tu as réussi à traverser ces 7 jours difficiles avec sagesse et prudence. Tu as gardé ton honnêteté tout en trouvant des solutions à tes problèmes. Bien que fatigué, tu conserves ta dignité et le respect de ton entourage. Les jours à venir semblent plus prometteurs grâce à tes bonnes décisions.",
-                conditions: { moralityMin: 7, hungerMin: 4, energyMin: 3 }
-            },
-            {
-                title: "Le Roi de la Débrouille",
-                desc: "Ces 7 jours ont été une leçon de survie urbaine. Tu as su faire preuve d'ingéniosité, naviguant dans les règles parfois floues de la ville. Tu as fait ce qu'il fallait pour survivre, sans te laisser abattre. Tes relations ont souffert mais tu as tenu bon, toujours prêt à saisir les opportunités.",
-                conditions: { moneyMin: 5000, socialMax: 5 }
-            },
-            {
-                title: "Le Sacrifié",
-                desc: "Tu as donné tout ce que tu avais pour aider ta famille et tes amis. Tes stats personnelles sont au plus bas mais ton coeur est rempli de fierté. Les gens du quartier se souviendront de ta générosité. Tu pourras marcher la tête haute dans les rues d'Abidjan.",
-                conditions: { moralityMin: 8, moneyMax: 1000, socialMin: 6 }
-            },
-            {
-                title: "Le Corrompu",
-                desc: "La vie à Abidjan t'a changé. Pour survivre, tu as emprunté des chemins sombres. L'argent facile t'a attiré et tu t'es brûlé les ailes. Maintenant, seul et méfiant, tu regardes la ville avec des yeux différents. Les jours à venir semblent plus incertains que jamais.",
-                conditions: { moralityMax: 3 }
-            },
-            {
-                title: "L'Ascension Sociale",
-                desc: "Grâce à tes réseaux et à une bonne gestion de ressources, tu as non seulement survécu mais tu as aussi jeté les bases de quelque chose de plus grand. Des opportunités se dessinent à l'horizon. Ta famille et tes amis sont fiers de toi. Qui sait ce que l'avenir réserve?",
-                conditions: { socialMin: 8, moneyMin: 4000 }
-            }
-        ];
-
-        // Fonction utilitaire pour mettre à jour l'interface
-        function updateUI() {
-            // Mise à jour du titre du jour et de la phase
-            const phases = ['Matin', 'Après-midi', 'Soir'];
-            document.querySelector('.day-counter').textContent = `Jour ${gameState.day}/7 - ${phases[gameState.phase-1]}`;
-            
-            // Mise à jour des barres de statut
-            document.getElementById('money-value').textContent = gameState.money.toLocaleString('fr-FR');
-            document.getElementById('money-bar').style.width = `${Math.min(100, gameState.money/100)}%`;
-            
-            document.getElementById('hunger-value').textContent = `${gameState.hunger}/10`;
-            document.getElementById('hunger-bar').style.width = `${gameState.hunger*10}%`;
-            document.getElementById('hunger-bar').style.backgroundColor = getStatColor(gameState.hunger);
-            
-            document.getElementById('energy-value').textContent = `${gameState.energy}/10`;
-            document.getElementById('energy-bar').style.width = `${gameState.energy*10}%`;
-            document.getElementById('energy-bar').style.backgroundColor = getStatColor(gameState.energy);
-            
-            document.getElementById('stress-value').textContent = `${gameState.stress}/10`;
-            document.getElementById('stress-bar').style.width = `${gameState.stress*10}%`;
-            document.getElementById('stress-bar').style.backgroundColor = getStressColor(gameState.stress);
-            
-            document.getElementById('morality-value').textContent = `${gameState.morality}/10`;
-            document.getElementById('morality-bar').style.width = `${gameState.morality*10}%`;
-            document.getElementById('morality-bar').style.backgroundColor = getStatColor(gameState.morality);
-            
-            document.getElementById('social-value').textContent = `${gameState.social}/10`;
-            document.getElementById('social-bar').style.width = `${gameState.social*10}%`;
-            document.getElementById('social-bar').style.backgroundColor = getStatColor(gameState.social);
-            
-            // Mise à jour de l'inventaire
-            const inventoryItemsDiv = document.getElementById('inventory-items');
-            inventoryItemsDiv.innerHTML = '';
-            
-            gameState.inventory.forEach(itemId => {
-                const item = items.find(i => i.id === itemId);
-                if (item) {
-                    const itemDiv = document.createElement('div');
-                    itemDiv.className = 'inventory-item';
-                    itemDiv.innerHTML = `
-                        <div class="inventory-emoji">${item.emoji}</div>
-                        <div class="inventory-name">${item.name}</div>
-                    `;
-                    inventoryItemsDiv.appendChild(itemDiv);
-                }
-            });
-            
-            // Mise à jour de la capacité de l'inventaire
-            const inventoryCapacity = document.querySelector('.inventory-header h2');
-            inventoryCapacity.innerHTML = `<span>🎒</span> Inventaire (${gameState.inventory.length}/10)`;
-        }
-
-        // Fonction pour déterminer la couleur d'une statut
-        function getStatColor(value) {
-            if (value <= 3) return 'var(--stat-low)';
-            if (value <= 7) return 'var(--stat-medium)';
-            return 'var(--stat-high)';
-        }
-
-        // Fonction spéciale pour le stress (les couleurs sont inversées)
-        function getStressColor(value) {
-            if (value >= 7) return 'var(--stat-low)';
-            if (value >= 4) return 'var(--stat-medium)';
-            return 'var(--stat-high)';
-        }
-
-        // Fonction pour afficher une notification
-        function showNotification(text, type = 'info') {
-            const notificationDiv = document.createElement('div');
-            notificationDiv.textContent = text;
-            notificationDiv.className = `notification notification-${type}`;
-            
-            const notificationArea = document.getElementById('notification-area');
-            notificationArea.appendChild(notificationDiv);
-            
-            setTimeout(() => {
-                notificationDiv.remove();
-            }, 3000);
-        }
-
-        // Fonction pour gérer les choix du joueur
-        function makeChoice(choiceIndex) {
-            const event = gameState.currentEvent;
-            const choice = event.choices[choiceIndex];
-            
-            // Appliquer les effets du choix
-            if (choice.effect) {
-                Object.entries(choice.effect).forEach(([stat, value]) => {
-                    if (stat === 'money') {
-                        gameState.money += value;
-                    } else {
-                        gameState[stat] = Math.max(0, Math.min(10, gameState[stat] + value));
-                    }
-                });
-            }
-            
-            // Passer à l'événement suivant
-            if (choice.next === 'randomEvent') {
-                triggerRandomEvent();
-            } else if (choice.next === 'continue') {
-                nextPhase();
-            } else {
-                // D'autres événements spécifiques peuvent être ajoutés ici
-                gameState.currentEvent = events[choice.next] || events.start;
-                displayEvent();
-            }
-            
-            // Vérifier les conditions de fin de jeu
-            checkGameOver();
-            updateUI();
-        }
-
-        // Fonction pour déclencher un événement aléatoire
-        function triggerRandomEvent() {
-            const randomIndex = Math.floor(Math.random() * randomEvents.length);
-            gameState.currentEvent = randomEvents[randomIndex];
-            displayEvent();
-        }
-
-        // Fonction pour afficher l'événement actuel
-        function displayEvent() {
-            document.getElementById('narrative').textContent = gameState.currentEvent.text;
-            
-            const choicesContainer = document.getElementById('choices');
-            choicesContainer.innerHTML = '';
-            
-            gameState.currentEvent.choices.forEach((choice, index) => {
-                const button = document.createElement('button');
-                button.className = 'choice-btn';
-                button.textContent = choice.text;
-                button.onclick = () => makeChoice(index);
-                choicesContainer.appendChild(button);
-            });
-        }
-
-        // Fonction pour passer à la phase suivante
-        function nextPhase() {
-            gameState.phase++;
-            
-            if (gameState.phase > 3) {
-                gameState.day++;
-                gameState.phase = 1;
-                
-                if (gameState.day > 7) {
-                    endGame();
-                    return;
-                }
-            }
-            
-            // Diminuer la faim et l'énergie à chaque nouvelle phase
-            gameState.hunger = Math.max(0, gameState.hunger - 1);
-            gameState.energy = Math.max(0, gameState.energy - 1);
-            
-            // Réinitialiser l'événement
-            gameState.currentEvent = events.start;
-            displayEvent();
-            updateUI();
-        }
-
-        // Fonction pour vérifier si le jeu est terminé
-        function checkGameOver() {
-            if (gameState.money <= 0 || gameState.hunger <= 0 || gameState.energy <= 0) {
-                showGameOver();
-                return true;
-            }
-            return false;
-        }
-
-        // Fonction pour afficher l'écran de fin
-        function showGameOver() {
-            let message = '';
-            
-            if (gameState.money <= 0) {
-                message = "Tu es complètement fauché! Sans un sou en poche, tu ne peux plus survivre dans les rues d'Abidjan. Peut-être as-tu trop dépensé ou pas assez gagné?";
-            } else if (gameState.hunger <= 0) {
-                message = "La faim a eu raison de toi. Affaibli et épuisé, tu n'as pas trouvé assez à manger pour traverser ces 7 jours à Abidjan. La débrouillardise demande du courage et de la vigilance.";
-            } else if (gameState.energy <= 0) {
-                message = "Épuisé par le rythme effréné de la ville et les défis de ta survie, tu t'écroules. Abidjan peut être impitoyable avec ceux qui se surmènent.";
-            }
-            
-            document.getElementById('game-over-text').textContent = message;
-            document.getElementById('game-over-screen').style.display = 'flex';
-        }
-
-        // Fonction pour terminer le jeu (après 7 jours)
-        function endGame() {
-            const endContent = document.getElementById('end-game-content');
-            endContent.innerHTML = '';
-            
-            // Choisir une fin appropriée
-            let matchedEnding = endings[0];
-            
-            for (const ending of endings) {
-                let matches = true;
-                
-                Object.entries(ending.conditions).forEach(([condition, value]) => {
-                    const stat = condition.replace('Min', '').replace('Max', '');
-                    const isMin = condition.includes('Min');
-                    const isMax = condition.includes('Max');
-                    
-                    if (isMin && gameState[stat] < value) matches = false;
-                    if (isMax && gameState[stat] > value) matches = false;
-                });
-                
-                if (matches) {
-                    matchedEnding = ending;
-                    break;
-                }
-            }
-            
-            // Construire le contenu de fin
-            let html = `
-                <h3>${matchedEnding.title}</h3>
-                <p>${matchedEnding.desc}</p>
-                
-                <h4 style="margin-top: 20px;">Statistiques Finales:</h4>
-                <ul style="margin-bottom: 20px;">
-                    <li>💰 Argent: ${gameState.money.toLocaleString('fr-FR')} FCFA</li>
-                    <li>🍗 Faim: ${gameState.hunger}/10</li>
-                    <li>💤 Énergie: ${gameState.energy}/10</li>
-                    <li>😰 Stress: ${gameState.stress}/10</li>
-                    <li>⚖️ Moralité: ${gameState.morality}/10</li>
-                    <li>📱 Relations sociales: ${gameState.social}/10</li>
-                </ul>
-                
-                <h4>Relations:</h4>
-                <div class="npc-container">
-            `;
-            
-            Object.entries(gameState.npcRelationships).forEach(([npcId, data]) => {
-                const npc = npcs.find(n => n.id === npcId);
-                if (npc) {
-                    html += `
-                        <div class="npc-item">
-                            <div class="npc-name">${npc.emoji} ${npc.name} (${data.title})</div>
-                            <div>Niveau: ${data.level}/10</div>
-                        </div>
-                    `;
-                }
-            });
-            
-            html += `
-                </div>
-                
-                <h4 style="margin-top: 20px;">Inventaire:</h4>
-                <div class="inventory-items">
-            `;
-            
-            gameState.inventory.forEach(itemId => {
-                const item = items.find(i => i.id === itemId);
-                if (item) {
-                    html += `
-                        <div class="inventory-item">
-                            <div class="inventory-emoji">${item.emoji}</div>
-                            <div>${item.name}</div>
-                        </div>
-                    `;
-                }
-            });
-            
-            html += `
-                </div>
-            `;
-            
-            endContent.innerHTML = html;
-            document.getElementById('end-screen').style.display = 'flex';
-        }
-
-        // Fonction pour recommencer le jeu
-        function restartGame() {
-            // Réinitialiser l'état du jeu
-            gameState.day = 1;
-            gameState.phase = 1;
-            gameState.money = 2500;
-            gameState.hunger = 6;
-            gameState.energy = 7;
-            gameState.stress = 3;
-            gameState.morality = 9;
-            gameState.social = 5;
-            gameState.inventory = [];
-            
-            gameState.npcRelationships = {
-                Ibrahim: { level: 6, title: "Ami" },
-                Maman: { level: 8, title: "Famille" },
-                Rival: { level: 2, title: "Ennemi" },
-                Vendeuse: { level: 4, title: "Connaissance" },
-                ConducteurGbaka: { level: 5, title: "Connaissance" }
-            };
-            
-            gameState.currentEvent = events.start;
-            
-            // Cacher les écrans de fin
-            document.getElementById('game-over-screen').style.display = 'none';
-            document.getElementById('end-screen').style.display = 'none';
-            
-            // Réinitialiser l'interface
-            displayEvent();
-            updateUI();
-        }
-
-        // Détection tactile
-        let isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints;
-
-        // Améliorations pour mobile
-        if (isTouchDevice) {
-            document.body.classList.add('touch-device');
-            const buttons = document.querySelectorAll('.choice-btn');
-            buttons.forEach(button => {
-                button.style.pointerEvents = 'auto';
-                button.style.touchAction = 'manipulation';
-            });
-        }
-
-        // Initialisation du jeu
-        document.addEventListener('DOMContentLoaded', () => {
-            gameState.currentEvent = events.start;
-            displayEvent();
-            updateUI();
-        });
-    </script>
+<!-- ... Le reste de ton HTML reste inchangé ... -->
+<!--
+  Pour garder ce message court, copie-colle ici
+  tout le reste du body tel qu’il est dans ton fichier original (divs, scripts, etc.) 
+  car la correction principale est dans la balise <style> ci-dessus.
+-->
 </body>
 </html>
