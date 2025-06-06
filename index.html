@@ -3,365 +3,492 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WinPredict - Prédictions Sportives Gagnantes</title>
+    <title>Rate Ma Tenue - Le style ivoirien à l'honneur</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: { 
-                        primary: '#4F46E5',
-                        secondary: '#10B981',
-                        dark: '#1F2937',
-                        light: '#F9FAFB'
-                    }
-                }
-            }
-        }
-    </script>
     <style>
-        .prediction-card { transition: all 0.3s ease; }
-        .prediction-card:hover { transform: translateY(-5px); box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);}
-        .stats-counter { font-family: 'Arial', sans-serif; }
-        .floating-btn { animation: float 3s ease-in-out infinite;}
-        @keyframes float {
-            0% { transform: translateY(0px); }
-            50% { transform: translateY(-10px); }
-            100% { transform: translateY(0px); }
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap');
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #FFF5E6;
+        }
+        
+        .gradient-text {
+            background: linear-gradient(90deg, #FF7E36, #A020F0);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        
+        .tenue-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+        
+        .vote-btn:hover {
+            transform: scale(1.05);
+        }
+        
+        /* Animation pour les nouveaux posts */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .new-post {
+            animation: fadeIn 0.5s ease-out;
         }
     </style>
 </head>
-<body class="bg-gray-50">
-    <!-- Header/Navigation -->
-    <header class="bg-white shadow-sm sticky top-0 z-50">
-        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
-            <div class="flex items-center space-x-2">
-                <div class="w-10 h-10 rounded-full bg-primary flex items-center justify-center">
-                    <i class="fas fa-trophy text-white text-xl"></i>
-                </div>
-                <span class="text-xl font-bold text-dark">WinPredict</span>
-            </div>
-            <nav class="hidden md:flex space-x-8">
-                <a href="#accueil" class="text-dark hover:text-primary font-medium">Accueil</a>
-                <a href="#predictions" class="text-dark hover:text-primary font-medium">Prédictions</a>
-                <a href="#abonnements" class="text-dark hover:text-primary font-medium">Abonnements</a>
-                <a href="#resultats" class="text-dark hover:text-primary font-medium">Résultats</a>
-                <a href="#contact" class="text-dark hover:text-primary font-medium">Contact</a>
+<body class="min-h-screen flex flex-col">
+    <!-- Header -->
+    <header class="bg-white shadow-md sticky top-0 z-50">
+        <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+            <h1 class="text-2xl md:text-3xl font-bold gradient-text">RATE MA TENUE</h1>
+            <nav class="flex items-center space-x-4">
+                <button onclick="toggleAbout()" class="text-sm md:text-base font-semibold text-orange-600 hover:text-purple-600 transition">À propos</button>
+                <button onclick="togglePostForm()" class="bg-gradient-to-r from-orange-500 to-purple-600 text-white px-4 py-2 rounded-full text-sm md:text-base font-bold hover:opacity-90 transition">
+                    <i class="fas fa-plus mr-1"></i> Poster ma tenue
+                </button>
             </nav>
-            <div class="flex items-center space-x-4">
-                <button class="hidden md:block bg-primary hover:bg-indigo-700 text-white px-4 py-2 rounded-lg font-medium transition duration-300">
-                    Connexion
-                </button>
-                <button class="md:hidden text-dark">
-                    <i class="fas fa-bars text-2xl"></i>
-                </button>
-            </div>
         </div>
     </header>
 
-    <!-- Hero Section -->
-    <section id="accueil" class="py-16 md:py-24 bg-gradient-to-r from-primary to-indigo-600 text-white">
-        <div class="container mx-auto px-4">
-            <div class="flex flex-col md:flex-row items-center">
-                <div class="md:w-1/2 mb-10 md:mb-0">
-                    <h1 class="text-4xl md:text-5xl font-bold mb-6">Vos <span class="text-secondary">prédictions sportives</span> gagnantes</h1>
-                    <p class="text-xl mb-8 opacity-90">Accédez à nos analyses expertes et augmentez vos chances de gagner sur les matchs de football, basketball, tennis et plus encore.</p>
-                    <div class="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
-                        <a href="https://wa.me/2250102770539" target="_blank"
-                           class="bg-secondary hover:bg-emerald-600 text-white px-6 py-3 rounded-lg font-bold text-lg transition duration-300 flex justify-center">
-                            S'abonner maintenant
-                        </a>
-                        <button class="bg-white hover:bg-gray-100 text-primary px-6 py-3 rounded-lg font-bold text-lg transition duration-300">
-                            Voir les prédictions
-                        </button>
+    <!-- Main Content -->
+    <main class="flex-grow container mx-auto px-4 py-6">
+        <!-- Top Tenues Section -->
+        <section class="mb-10">
+            <h2 class="text-xl md:text-2xl font-bold mb-4 gradient-text text-center">🔥 TOP TENUES DE LA SEMAINE 🔥</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <!-- Top Tenue 1 -->
+                <div class="bg-white rounded-lg shadow-md overflow-hidden flex flex-col">
+                    <div class="relative h-48 md:h-64 w-full overflow-hidden">
+                        <img src="https://images.unsplash.com/photo-1539109132441-3803c3cd5556?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8YWZyaWNhbiUyMHN0eWxlfGVufDB8fDB8fHww&auto=format&fit=crop&w=500&q=60" 
+                             class="w-full h-full object-cover" alt="Top tenue 1">
+                        <div class="absolute top-2 left-2 bg-gradient-to-r from-orange-500 to-purple-600 text-white px-2 py-1 rounded-full text-xs font-bold">#1 TOP</div>
+                    </div>
+                    <div class="p-4 flex-grow">
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="font-bold text-sm">@mafa_style</span>
+                            <span class="text-xs text-gray-500">142 votes</span>
+                        </div>
+                        <p class="text-sm mb-3">Style tradi moderne, wax et baskets !</p>
+                        <div class="flex justify-between items-center">
+                            <button class="vote-btn bg-green-100 text-green-800 px-3 py-1 rounded-full text-xs font-bold flex items-center transition">
+                                <span class="mr-1">🔥</span> 98
+                            </button>
+                            <button class="vote-btn bg-red-100 text-red-800 px-3 py-1 rounded-full text-xs font-bold flex items-center transition">
+                                <span class="mr-1">❌</span> 44
+                            </button>
+                        </div>
                     </div>
                 </div>
-                <div class="md:w-1/2 relative">
-                    <div class="bg-white/10 backdrop-blur-md rounded-2xl p-6 shadow-xl">
-                        <div class="flex justify-between items-center mb-6">
-                            <h3 class="font-bold text-xl">Prédiction du jour</h3>
-                            <span class="bg-secondary text-white text-xs px-2 py-1 rounded">VIP</span>
+                
+                <!-- Top Tenue 2 -->
+                <div class="bg-white rounded-lg shadow-md overflow-hidden flex flex-col">
+                    <div class="relative h-48 md:h-64 w-full overflow-hidden">
+                        <img src="https://images.unsplash.com/photo-1551232864-3f0890e580d9?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NXx8YWZyaWNhbiUyMHN0eWxlfGVufDB8fDB8fHww&auto=format&fit=crop&w=500&q=60" 
+                             class="w-full h-full object-cover" alt="Top tenue 2">
+                        <div class="absolute top-2 left-2 bg-gradient-to-r from-orange-500 to-purple-600 text-white px-2 py-1 rounded-full text-xs font-bold">#2 TOP</div>
+                    </div>
+                    <div class="p-4 flex-grow">
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="font-bold text-sm">@djamil_paname</span>
+                            <span class="text-xs text-gray-500">127 votes</span>
                         </div>
-                        <div class="bg-white/20 p-4 rounded-lg mb-4">
-                            <div class="flex justify-between items-center mb-3">
-                                <div class="flex items-center">
-                                    <img src="https://via.placeholder.com/30" alt="Team 1" class="w-8 h-8 mr-2">
-                                    <span class="font-medium">PSG</span>
-                                </div>
-                                <span class="bg-dark text-white px-2 py-1 text-xs rounded">Ligue 1</span>
-                                <div class="flex items-center">
-                                    <span class="font-medium">OM</span>
-                                    <img src="https://via.placeholder.com/30" alt="Team 2" class="w-8 h-8 ml-2">
-                                </div>
-                            </div>
-                            <div class="text-center my-4">
-                                <span class="text-2xl font-bold">2.5</span>
-                                <span class="mx-2">BUTS</span>
-                                <span class="text-2xl font-bold">1.5</span>
-                            </div>
-                            <div class="flex justify-between text-sm">
-                                <span>Cote: 1.85</span>
-                                <span>Probabilité: 78%</span>
-                            </div>
-                        </div>
-                        <div class="grid grid-cols-3 gap-2">
-                            <div class="bg-secondary text-white text-center py-2 rounded font-bold">1</div>
-                            <div class="bg-white/20 text-center py-2 rounded font-bold">N</div>
-                            <div class="bg-white/20 text-center py-2 rounded font-bold">2</div>
+                        <p class="text-sm mb-3">Look afro-urbain pour la journée</p>
+                        <div class="flex justify-between items-center">
+                            <button class="vote-btn bg-green-100 text-green-800 px-3 py-1 rounded-full text-xs font-bold flex items-center transition">
+                                <span class="mr-1">🔥</span> 85
+                            </button>
+                            <button class="vote-btn bg-red-100 text-red-800 px-3 py-1 rounded-full text-xs font-bold flex items-center transition">
+                                <span class="mr-1">❌</span> 42
+                            </button>
                         </div>
                     </div>
-                    <div class="absolute -bottom-6 -right-6 bg-secondary text-white p-4 rounded-full shadow-xl floating-btn">
-                        <i class="fas fa-bolt text-2xl"></i>
+                </div>
+                
+                <!-- Top Tenue 3 -->
+                <div class="bg-white rounded-lg shadow-md overflow-hidden flex flex-col">
+                    <div class="relative h-48 md:h-64 w-full overflow-hidden">
+                        <img src="https://images.unsplash.com/photo-1592155931584-5d0b42a9a6fe?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTN8fGFmcmljYW4lMjBzdHlsZXxlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&w=500&q=60" 
+                             class="w-full h-full object-cover" alt="Top tenue 3">
+                        <div class="absolute top-2 left-2 bg-gradient-to-r from-orange-500 to-purple-600 text-white px-2 py-1 rounded-full text-xs font-bold">#3 TOP</div>
+                    </div>
+                    <div class="p-4 flex-grow">
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="font-bold text-sm">@bintou_fashion</span>
+                            <span class="text-xs text-gray-500">115 votes</span>
+                        </div>
+                        <p class="text-sm mb-3">Robe afro en pagne tissé</p>
+                        <div class="flex justify-between items-center">
+                            <button class="vote-btn bg-green-100 text-green-800 px-3 py-1 rounded-full text-xs font-bold flex items-center transition">
+                                <span class="mr-1">🔥</span> 80
+                            </button>
+                            <button class="vote-btn bg-red-100 text-red-800 px-3 py-1 rounded-full text-xs font-bold flex items-center transition">
+                                <span class="mr-1">❌</span> 35
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-    </section>
+        </section>
+        
+        <!-- Dernières tenues Section -->
+        <section>
+            <h2 class="text-xl md:text-2xl font-bold mb-4 gradient-text text-center">🆕 DERNIÈRES TENUES POSTÉES 🆕</h2>
+            <div id="tenues-container" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Tenue Card 1 -->
+                <div class="tenue-card bg-white rounded-xl shadow-md overflow-hidden transition duration-300">
+                    <div class="h-56 w-full overflow-hidden">
+                        <img src="https://images.unsplash.com/photo-1581044777550-4cfa60707c03?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Nnx8YWZyaWNhbiUyMHN0eWxlfGVufDB8fDB8fHww&auto=format&fit=crop&w=500&q=60" 
+                             class="w-full h-full object-cover" alt="Tenue 1">
+                    </div>
+                    <div class="p-4">
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="font-bold text-sm">@jules_abj</span>
+                            <span class="text-xs text-gray-500">36 votes</span>
+                        </div>
+                        <p class="text-sm mb-3">Entre le tradi et le modern' #AbidjanVibe</p>
+                        <div class="flex justify-between items-center">
+                            <button class="vote-btn hover:bg-green-100 bg-green-50 text-green-800 px-4 py-2 rounded-lg font-bold flex items-center transition" onclick="vote(this, 'like')">
+                                <span class="mr-2">🔥</span> <span class="hidden sm:inline">Stylé !</span>
+                            </button>
+                            <button class="vote-btn hover:bg-red-100 bg-red-50 text-red-800 px-4 py-2 rounded-lg font-bold flex items-center transition" onclick="vote(this, 'dislike')">
+                                <span class="mr-2">❌</span> <span class="hidden sm:inline">Revois ça frangin</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Tenue Card 2 -->
+                <div class="tenue-card bg-white rounded-xl shadow-md overflow-hidden transition duration-300">
+                    <div class="h-56 w-full overflow-hidden">
+                        <img src="https://images.unsplash.com/photo-1596704017258-ec4a5f0f164b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTZ8fGFmcmljYW4lMjBzdHlsZXxlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&w=500&q=60" 
+                             class="w-full h-full object-cover" alt="Tenue 2">
+                    </div>
+                    <div class="p-4">
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="font-bold text-sm">@fatou_ebony</span>
+                            <span class="text-xs text-gray-500">42 votes</span>
+                        </div>
+                        <p class="text-sm mb-3">Style d'été avec accessoires locaux</p>
+                        <div class="flex justify-between items-center">
+                            <button class="vote-btn hover:bg-green-100 bg-green-50 text-green-800 px-4 py-2 rounded-lg font-bold flex items-center transition" onclick="vote(this, 'like')">
+                                <span class="mr-2">🔥</span> <span class="hidden sm:inline">Stylé !</span>
+                            </button>
+                            <button class="vote-btn hover:bg-red-100 bg-red-50 text-red-800 px-4 py-2 rounded-lg font-bold flex items-center transition" onclick="vote(this, 'dislike')">
+                                <span class="mr-2">❌</span> <span class="hidden sm:inline">Revois ça frangin</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Tenue Card 3 -->
+                <div class="tenue-card bg-white rounded-xl shadow-md overflow-hidden transition duration-300">
+                    <div class="h-56 w-full overflow-hidden">
+                        <img src="https://images.unsplash.com/photo-1517848568502-d03fa74e1964?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTl8fGFmcmljYW4lMjBzdHlsZXxlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&w=500&q=60" 
+                             class="w-full h-full object-cover" alt="Tenue 3">
+                    </div>
+                    <div class="p-4">
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="font-bold text-sm">@eric_toure</span>
+                            <span class="text-xs text-gray-500">28 votes</span>
+                        </div>
+                        <p class="text-sm mb-3">Boubou moderne pour le bureau</p>
+                        <div class="flex justify-between items-center">
+                            <button class="vote-btn hover:bg-green-100 bg-green-50 text-green-800 px-4 py-2 rounded-lg font-bold flex items-center transition" onclick="vote(this, 'like')">
+                                <span class="mr-2">🔥</span> <span class="hidden sm:inline">Stylé !</span>
+                            </button>
+                            <button class="vote-btn hover:bg-red-100 bg-red-50 text-red-800 px-4 py-2 rounded-lg font-bold flex items-center transition" onclick="vote(this, 'dislike')">
+                                <span class="mr-2">❌</span> <span class="hidden sm:inline">Revois ça frangin</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Tenue Card 4 -->
+                <div class="tenue-card bg-white rounded-xl shadow-md overflow-hidden transition duration-300">
+                    <div class="h-56 w-full overflow-hidden">
+                        <img src="https://images.unsplash.com/photo-1590086783191-a0694c7d1e6e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MjB8fGFmcmljYW4lMjBzdHlsZXxlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&w=500&q=60" 
+                             class="w-full h-full object-cover" alt="Tenue 4">
+                    </div>
+                    <div class="p-4">
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="font-bold text-sm">@amara_design</span>
+                            <span class="text-xs text-gray-500">19 votes</span>
+                        </div>
+                        <p class="text-sm mb-3">Accessoirisé avec élégance</p>
+                        <div class="flex justify-between items-center">
+                            <button class="vote-btn hover:bg-green-100 bg-green-50 text-green-800 px-4 py-2 rounded-lg font-bold flex items-center transition" onclick="vote(this, 'like')">
+                                <span class="mr-2">🔥</span> <span class="hidden sm:inline">Stylé !</span>
+                            </button>
+                            <button class="vote-btn hover:bg-red-100 bg-red-50 text-red-800 px-4 py-2 rounded-lg font-bold flex items-center transition" onclick="vote(this, 'dislike')">
+                                <span class="mr-2">❌</span> <span class="hidden sm:inline">Revois ça frangin</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
 
-    <!-- Subscription Section -->
-    <section id="abonnements" class="py-16 bg-primary text-white">
-        <div class="container mx-auto px-4">
-            <div class="text-center mb-12">
-                <span class="text-secondary font-bold">NOS OFFRES</span>
-                <h2 class="text-3xl font-bold mt-2">Choisissez votre abonnement</h2>
-                <p class="opacity-90 max-w-2xl mx-auto mt-4">Accédez à nos prédictions premium et maximisez vos gains avec l'abonnement qui correspond à vos besoins.</p>
+    <!-- Post Form Modal -->
+    <div id="postForm" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center hidden">
+        <div class="bg-white rounded-xl p-6 w-full max-w-md mx-4">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-xl font-bold gradient-text">Poster ma tenue</h3>
+                <button onclick="togglePostForm()" class="text-gray-500 hover:text-gray-700">
+                    <i class="fas fa-times"></i>
+                </button>
             </div>
             
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-                <!-- Basic Plan -->
-                <div class="bg-white/10 backdrop-blur-md rounded-xl overflow-hidden border border-white/20">
-                    <div class="p-8 text-center">
-                        <h3 class="text-xl font-bold mb-2">Standard</h3>
-                        <div class="mb-6">
-                            <span class="text-4xl font-bold">19€</span>
-                            <span class="opacity-80">/mois</span>
+            <form id="newTenueForm" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Photo de ta tenue</label>
+                    <div class="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center">
+                        <input type="file" id="tenuePhoto" accept="image/*" class="hidden">
+                        <label for="tenuePhoto" class="cursor-pointer">
+                            <i class="fas fa-camera text-3xl text-gray-400 mb-2"></i>
+                            <p class="text-sm text-gray-600">Clique pour choisir une photo</p>
+                        </label>
+                        <div id="previewContainer" class="mt-2 hidden">
+                            <img id="imagePreview" class="mx-auto max-h-40 rounded">
                         </div>
-                        <ul class="space-y-3 mb-8">
-                            <li class="flex items-center"><i class="fas fa-check-circle text-secondary mr-2"></i><span>5 prédictions par semaine</span></li>
-                            <li class="flex items-center"><i class="fas fa-check-circle text-secondary mr-2"></i><span>Sports: Football, Tennis</span></li>
-                            <li class="flex items-center"><i class="fas fa-check-circle text-secondary mr-2"></i><span>Analyses basiques</span></li>
-                            <li class="flex items-center opacity-50"><i class="fas fa-times-circle mr-2"></i><span>Pas d'accès VIP</span></li>
-                            <li class="flex items-center opacity-50"><i class="fas fa-times-circle mr-2"></i><span>Support standard</span></li>
-                        </ul>
-                        <a href="https://wa.me/2250102770539" target="_blank"
-                           class="w-full bg-white hover:bg-gray-100 text-primary py-3 rounded-lg font-bold transition duration-300 flex justify-center">
-                            S'abonner
-                        </a>
                     </div>
                 </div>
                 
-                <!-- Popular Plan -->
-                <div class="bg-secondary rounded-xl overflow-hidden transform scale-105 shadow-xl relative">
-                    <div class="absolute top-0 right-0 bg-primary text-white text-xs font-bold px-3 py-1 rounded-bl-lg">
-                        POPULAIRE
-                    </div>
-                    <div class="p-8 text-center">
-                        <h3 class="text-xl font-bold mb-2">Premium</h3>
-                        <div class="mb-6">
-                            <span class="text-4xl font-bold">49€</span>
-                            <span class="opacity-80">/mois</span>
-                        </div>
-                        <ul class="space-y-3 mb-8">
-                            <li class="flex items-center"><i class="fas fa-check-circle text-primary mr-2"></i><span>15 prédictions par semaine</span></li>
-                            <li class="flex items-center"><i class="fas fa-check-circle text-primary mr-2"></i><span>Tous les sports</span></li>
-                            <li class="flex items-center"><i class="fas fa-check-circle text-primary mr-2"></i><span>Analyses détaillées</span></li>
-                            <li class="flex items-center"><i class="fas fa-check-circle text-primary mr-2"></i><span>Accès à certaines VIP</span></li>
-                            <li class="flex items-center"><i class="fas fa-check-circle text-primary mr-2"></i><span>Support prioritaire</span></li>
-                        </ul>
-                        <a href="https://wa.me/2250102770539" target="_blank"
-                           class="w-full bg-white hover:bg-gray-100 text-secondary py-3 rounded-lg font-bold transition duration-300 flex justify-center">
-                            S'abonner
-                        </a>
-                    </div>
+                <div>
+                    <label for="pseudo" class="block text-sm font-medium text-gray-700 mb-1">Ton pseudo ou @Instagram</label>
+                    <input type="text" id="pseudo" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent" placeholder="Ex: @mon_insta" required>
                 </div>
                 
-                <!-- VIP Plan -->
-                <div class="bg-white/10 backdrop-blur-md rounded-xl overflow-hidden border border-white/20">
-                    <div class="p-8 text-center">
-                        <h3 class="text-xl font-bold mb-2">VIP</h3>
-                        <div class="mb-6">
-                            <span class="text-4xl font-bold">99€</span>
-                            <span class="opacity-80">/mois</span>
-                        </div>
-                        <ul class="space-y-3 mb-8">
-                            <li class="flex items-center"><i class="fas fa-check-circle text-secondary mr-2"></i><span>Prédictions illimitées</span></li>
-                            <li class="flex items-center"><i class="fas fa-check-circle text-secondary mr-2"></i><span>Tous les sports + eSports</span></li>
-                            <li class="flex items-center"><i class="fas fa-check-circle text-secondary mr-2"></i><span>Analyses expertes</span></li>
-                            <li class="flex items-center"><i class="fas fa-check-circle text-secondary mr-2"></i><span>Toutes les prédictions VIP</span></li>
-                            <li class="flex items-center"><i class="fas fa-check-circle text-secondary mr-2"></i><span>Support 24/7</span></li>
-                        </ul>
-                        <a href="https://wa.me/2250102770539" target="_blank"
-                           class="w-full bg-white hover:bg-gray-100 text-primary py-3 rounded-lg font-bold transition duration-300 flex justify-center">
-                            S'abonner
-                        </a>
-                    </div>
+                <div>
+                    <label for="description" class="block text-sm font-medium text-gray-700 mb-1">Description (optionnelle)</label>
+                    <textarea id="description" rows="2" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent" placeholder="Décris ton style en qqs mots..."></textarea>
                 </div>
+                
+                <button type="submit" class="w-full bg-gradient-to-r from-orange-500 to-purple-600 text-white py-3 rounded-lg font-bold hover:opacity-90 transition">
+                    <i class="fas fa-upload mr-2"></i> Partager ma tenue
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- About Modal -->
+    <div id="aboutModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center hidden">
+        <div class="bg-white rounded-xl p-6 w-full max-w-md mx-4 max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-xl font-bold gradient-text">À propos de Rate Ma Tenue</h3>
+                <button onclick="toggleAbout()" class="text-gray-500 hover:text-gray-700">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <div class="space-y-4 text-sm text-gray-700">
+                <p>🎉 <strong>Rate Ma Tenue</strong> est la plateforme ultime pour les jeunes Ivoiriens qui veulent montrer leur style et avoir des avis en temps réel !</p>
+                
+                <p>T'es un(e) passionné(e) de mode ? Tu veux savoir si ta tenue est "au niveau" ? Poste ta photo et laisse la communauté voter :</p>
+                
+                <div class="flex items-center my-2">
+                    <span class="bg-green-100 text-green-800 px-2 py-1 rounded mr-2">🔥</span>
+                    <span class="font-medium">"T'es trop frais(e) !" (si ta tenue est stylée)</span>
+                </div>
+                <div class="flex items-center mb-4">
+                    <span class="bg-red-100 text-red-800 px-2 py-1 rounded mr-2">❌</span>
+                    <span class="font-medium">"Tu forces un peu là..." (si la tenue peut être améliorée)</span>
+                </div>
+                
+                <p>Que ce soit style tradi, urbain, afro ou tendance, tous les looks sont les bienvenus ! C'est l'occasion de montrer ta créativité et ton identité ivoirienne.</p>
+                
+                <p>Le <strong>"Top tenues de la semaine"</strong> met en avant les looks les plus populaires. Peut-être que le tien sera le prochain ?</p>
+                
+                <p>Le concept est simple :</p>
+                <ol class="list-decimal pl-5 space-y-1">
+                    <li>👉 Poste une photo de ta tenue</li>
+                    <li>👉 Partage ton pseudo ou @Instagram</li>
+                    <li>👉 Ajoute une petite description si tu veux</li>
+                    <li>👉 Attends les votes et améliore-toi !</li>
+                </ol>
+                
+                <p>👉 <span class="font-bold gradient-text">NOUS JOINDRE</span> : rate.ma.tenue@abidjan.ci</p>
             </div>
         </div>
-    </section>
+    </div>
 
     <!-- Footer -->
-    <footer id="contact" class="bg-dark text-white py-12">
+    <footer class="bg-gradient-to-r from-orange-600 to-purple-700 text-white py-6">
         <div class="container mx-auto px-4">
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
-                <div>
-                    <div class="flex items-center space-x-2 mb-4">
-                        <div class="w-10 h-10 rounded-full bg-primary flex items-center justify-center">
-                            <i class="fas fa-trophy text-white text-xl"></i>
-                        </div>
-                        <span class="text-xl font-bold">WinPredict</span>
-                    </div>
-                    <p class="text-gray-400 mb-4">Le leader des prédictions sportives depuis 2015. Notre mission : vous fournir les analyses les plus précises pour maximiser vos gains.</p>
-                    <div class="flex space-x-4">
-                        <a href="#" class="text-gray-400 hover:text-white"><i class="fab fa-facebook-f"></i></a>
-                        <a href="#" class="text-gray-400 hover:text-white"><i class="fab fa-twitter"></i></a>
-                        <a href="#" class="text-gray-400 hover:text-white"><i class="fab fa-instagram"></i></a>
-                        <a href="#" class="text-gray-400 hover:text-white"><i class="fab fa-telegram"></i></a>
-                    </div>
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <div class="mb-4 md:mb-0">
+                    <h2 class="text-xl font-bold">RATE MA TENUE</h2>
+                    <p class="text-sm mt-1">Le style Ivoirien à l'honneur ✊🏾</p>
                 </div>
                 
-                <div>
-                    <h3 class="text-lg font-semibold mb-4">Liens rapides</h3>
-                    <ul class="space-y-2">
-                        <li><a href="#accueil" class="text-gray-400 hover:text-white">Accueil</a></li>
-                        <li><a href="#predictions" class="text-gray-400 hover:text-white">Prédictions</a></li>
-                        <li><a href="#abonnements" class="text-gray-400 hover:text-white">Abonnements</a></li>
-                        <li><a href="#resultats" class="text-gray-400 hover:text-white">Résultats</a></li>
-                        <li><a href="#" class="text-gray-400 hover:text-white">Blog</a></li>
-                    </ul>
-                </div>
-                
-                <div>
-                    <h3 class="text-lg font-semibold mb-4">Sports</h3>
-                    <ul class="space-y-2">
-                        <li><a href="#" class="text-gray-400 hover:text-white">Football</a></li>
-                        <li><a href="#" class="text-gray-400 hover:text-white">Basketball</a></li>
-                        <li><a href="#" class="text-gray-400 hover:text-white">Tennis</a></li>
-                        <li><a href="#" class="text-gray-400 hover:text-white">Rugby</a></li>
-                        <li><a href="#" class="text-gray-400 hover:text-white">eSports</a></li>
-                    </ul>
-                </div>
-                
-                <div>
-                    <h3 class="text-lg font-semibold mb-4">Contact</h3>
-                    <ul class="space-y-2">
-                        <li class="flex items-center">
-                            <i class="fas fa-envelope mr-2 text-gray-400"></i>
-                            <span>contact@winpredict.com</span>
-                        </li>
-                        <li class="flex items-center">
-                            <i class="fas fa-phone-alt mr-2 text-gray-400"></i>
-                            <span>+225 01 02 77 05 39</span>
-                        </li>
-                        <li class="flex items-center">
-                            <i class="fas fa-map-marker-alt mr-2 text-gray-400"></i>
-                            <span>Paris, France</span>
-                        </li>
-                    </ul>
-                    <!-- Newsletter WhatsApp -->
-                    <div class="mt-6">
-                        <h4 class="font-medium mb-2">Newsletter</h4>
-                        <form id="newsletterForm" class="flex">
-                            <input type="email" id="newsletterEmail" placeholder="Votre email" required class="px-3 py-2 bg-gray-800 text-white rounded-l focus:outline-none w-full">
-                            <button type="submit" class="bg-primary hover:bg-indigo-700 text-white px-4 py-2 rounded-r">
-                                <i class="fas fa-paper-plane"></i>
-                            </button>
-                        </form>
-                    </div>
-                    <script>
-                    document.getElementById('newsletterForm').onsubmit = function(e){
-                        e.preventDefault();
-                        var email = document.getElementById('newsletterEmail').value;
-                        var phone = "2250102770539";
-                        var message = encodeURIComponent("Nouvelle inscription newsletter : " + email);
-                        window.open("https://wa.me/" + phone + "?text=" + message, "_blank");
-                    };
-                    </script>
+                <div class="flex space-x-4">
+                    <a href="#" class="text-white hover:text-gray-200 transition">
+                        <i class="fab fa-instagram text-2xl"></i>
+                    </a>
+                    <a href="#" class="text-white hover:text-gray-200 transition">
+                        <i class="fab fa-tiktok text-2xl"></i>
+                    </a>
+                    <a href="#" class="text-white hover:text-gray-200 transition">
+                        <i class="fab fa-whatsapp text-2xl"></i>
+                    </a>
                 </div>
             </div>
             
-            <div class="border-t border-gray-800 mt-12 pt-8 flex flex-col md:flex-row justify-between items-center">
-                <p class="text-gray-500 mb-4 md:mb-0">© 2023 WinPredict. Tous droits réservés.</p>
-                <div class="flex space-x-6">
-                    <a href="#" class="text-gray-500 hover:text-white">Mentions légales</a>
-                    <a href="#" class="text-gray-500 hover:text-white">CGU</a>
-                    <a href="#" class="text-gray-500 hover:text-white">Politique de confidentialité</a>
-                    <a href="#" class="text-gray-500 hover:text-white">Responsabilité</a>
-                </div>
+            <div class="mt-6 pt-4 border-t border-white border-opacity-20 text-center">
+                <p class="text-xs">© 2023 Rate Ma Tenue. Tous droits réservés. Made in 🇨🇮</p>
             </div>
         </div>
     </footer>
 
-    <!-- Floating Action Button WhatsApp -->
-    <div class="fixed bottom-8 right-8 z-50">
-        <a href="https://wa.me/2250102770539" target="_blank"
-           class="w-14 h-14 bg-secondary hover:bg-emerald-600 text-white rounded-full shadow-xl flex items-center justify-center transition duration-300">
-            <i class="fab fa-whatsapp text-2xl"></i>
-        </a>
-    </div>
-
     <script>
-        // Counter Animation
-        const counters = document.querySelectorAll('.stats-counter');
-        const speed = 200;
-        counters.forEach(counter => {
-            const target = +counter.getAttribute('data-target');
-            const count = +counter.innerText;
-            const increment = target / speed;
-            if(count < target) {
-                counter.innerText = Math.ceil(count + increment);
-                setTimeout(updateCounter, 1);
+        // Toggle Post Form
+        function togglePostForm() {
+            const form = document.getElementById('postForm');
+            form.classList.toggle('hidden');
+        }
+
+        // Toggle About Modal
+        function toggleAbout() {
+            const modal = document.getElementById('aboutModal');
+            modal.classList.toggle('hidden');
+        }
+
+        // Image Preview
+        document.getElementById('tenuePhoto').addEventListener('change', function(e) {
+            const previewContainer = document.getElementById('previewContainer');
+            const preview = document.getElementById('imagePreview');
+            const file = e.target.files[0];
+            
+            if (file) {
+                const reader = new FileReader();
+                
+                reader.onload = function(e) {
+                    preview.src = e.target.result;
+                    previewContainer.classList.remove('hidden');
+                }
+                
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // Vote Functionality
+        function vote(button, type) {
+            const card = button.closest('.tenue-card');
+            const votesText = card.querySelector('.text-xs.text-gray-500');
+            const fireBtn = card.querySelector('.bg-green-50');
+            const crossBtn = card.querySelector('.bg-red-50');
+            
+            // Get current vote count
+            let totalVotes = parseInt(votesText.textContent.split(' ')[0]);
+            let fireVotes = parseInt(fireBtn.textContent.trim().split(' ')[fireBtn.textContent.includes('🔥') ? 1 : 0]) || 0;
+            let crossVotes = parseInt(crossBtn.textContent.trim().split(' ')[crossBtn.textContent.includes('❌') ? 1 : 0]) || 0;
+            
+            // Remove active class from both buttons
+            fireBtn.classList.remove('bg-green-100');
+            crossBtn.classList.remove('bg-red-100');
+            
+            // Check if already voted
+            if (button.classList.contains('bg-green-100') || button.classList.contains('bg-red-100')) {
+                // Unvote
+                if (type === 'like') {
+                    fireVotes--;
+                    button.classList.remove('bg-green-100');
+                } else {
+                    crossVotes--;
+                    button.classList.remove('bg-red-100');
+                }
+                totalVotes--;
             } else {
-                counter.innerText = target;
-            }
-            function updateCounter() {
-                const count = +counter.innerText;
-                const increment = target / speed;
-                if(count < target) {
-                    counter.innerText = Math.ceil(count + increment);
-                    setTimeout(updateCounter, 1);
-                } else {
-                    counter.innerText = target;
+                // Remove other vote if exists
+                if (fireBtn.classList.contains('bg-green-100')) {
+                    fireVotes--;
+                    fireBtn.classList.remove('bg-green-100');
                 }
-            }
-        });
-
-        // FAQ Accordion
-        const faqBtns = document.querySelectorAll('.faq-btn');
-        faqBtns.forEach(btn => {
-            btn.addEventListener('click', () => {
-                const content = btn.nextElementSibling;
-                const icon = btn.querySelector('i');
-                content.classList.toggle('hidden');
-                if(content.classList.contains('hidden')) {
-                    icon.style.transform = 'rotate(0deg)';
-                } else {
-                    icon.style.transform = 'rotate(180deg)';
+                if (crossBtn.classList.contains('bg-red-100')) {
+                    crossVotes--;
+                    crossBtn.classList.remove('bg-red-100');
                 }
-                faqBtns.forEach(otherBtn => {
-                    if(otherBtn !== btn) {
-                        otherBtn.nextElementSibling.classList.add('hidden');
-                        otherBtn.querySelector('i').style.transform = 'rotate(0deg)';
-                    }
-                });
-            });
-        });
+                
+                // Add new vote
+                if (type === 'like') {
+                    fireVotes++;
+                    button.classList.add('bg-green-100');
+                } else {
+                    crossVotes++;
+                    button.classList.add('bg-red-100');
+                }
+                
+                totalVotes = fireVotes + crossVotes;
+            }
+            
+            // Update counts
+            votesText.textContent = `${totalVotes} votes`;
+            fireBtn.innerHTML = `<span class="mr-2">🔥</span> <span class="hidden sm:inline">Stylé !</span> ${fireVotes > 0 ? fireVotes : ''}`;
+            crossBtn.innerHTML = `<span class="mr-2">❌</span> <span class="hidden sm:inline">Revois ça frangin</span> ${crossVotes > 0 ? crossVotes : ''}`;
+        }
 
-        // Mobile Menu Toggle (would need proper implementation)
-        const mobileMenuBtn = document.querySelector('.md\\:hidden');
-        mobileMenuBtn.addEventListener('click', () => {
-            alert('Mobile menu would open here in a full implementation');
-        });
-
-        // Smooth scrolling for anchor links
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function (e) {
-                e.preventDefault();
-                document.querySelector(this.getAttribute('href')).scrollIntoView({
-                    behavior: 'smooth'
-                });
-            });
+        // Submit New Tenue Form
+        document.getElementById('newTenueForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const pseudo = document.getElementById('pseudo').value;
+            const description = document.getElementById('description').value || "Pas de description";
+            const fileInput = document.getElementById('tenuePhoto');
+            
+            if (!fileInput.files.length) {
+                alert("Ajoute une photo de ta tenue avant de poster !");
+                return;
+            }
+            
+            // In a real app, here you would upload to a server
+            // For demo, we'll create a new card
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const tenueContainer = document.getElementById('tenues-container');
+                
+                const newTenue = document.createElement('div');
+                newTenue.className = 'tenue-card bg-white rounded-xl shadow-md overflow-hidden transition duration-300 new-post';
+                newTenue.innerHTML = `
+                    <div class="h-56 w-full overflow-hidden">
+                        <img src="${e.target.result}" class="w-full h-full object-cover" alt="Nouvelle tenue">
+                    </div>
+                    <div class="p-4">
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="font-bold text-sm">${pseudo}</span>
+                            <span class="text-xs text-gray-500">0 votes</span>
+                        </div>
+                        <p class="text-sm mb-3">${description}</p>
+                        <div class="flex justify-between items-center">
+                            <button class="vote-btn hover:bg-green-100 bg-green-50 text-green-800 px-4 py-2 rounded-lg font-bold flex items-center transition" onclick="vote(this, 'like')">
+                                <span class="mr-2">🔥</span> <span class="hidden sm:inline">Stylé !</span>
+                            </button>
+                            <button class="vote-btn hover:bg-red-100 bg-red-50 text-red-800 px-4 py-2 rounded-lg font-bold flex items-center transition" onclick="vote(this, 'dislike')">
+                                <span class="mr-2">❌</span> <span class="hidden sm:inline">Revois ça frangin</span>
+                            </button>
+                        </div>
+                    </div>
+                `;
+                
+                tenueContainer.prepend(newTenue);
+                
+                // Reset form
+                this.reset();
+                document.getElementById('previewContainer').classList.add('hidden');
+                togglePostForm();
+                
+                // Scroll to the new tenue
+                setTimeout(() => {
+                    newTenue.scrollIntoView({ behavior: 'smooth' });
+                }, 100);
+            };
+            
+            reader.readAsDataURL(fileInput.files[0]);
         });
     </script>
 </body>
