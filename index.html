@@ -1,109 +1,100 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>AfriChat</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
+  <meta charset="UTF-8">
+  <title>Chat App</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; max-width: 600px; margin: auto; }
+    #chat { display: none; }
+    #messages { border: 1px solid #ccc; height: 300px; overflow-y: scroll; padding: 10px; }
+    #messages li { margin: 5px 0; }
+    input { margin: 5px; padding: 5px; }
+  </style>
 </head>
-<body class="bg-gray-100 min-h-screen">
+<body>
+  <h2>Connexion</h2>
+  <input id="username" placeholder="Nom d'utilisateur">
+  <input id="password" type="password" placeholder="Mot de passe">
+  <button onclick="register()">S'inscrire</button>
+  <button onclick="login()">Connexion</button>
+  <p id="status"></p>
 
-  <!-- Page de connexion -->
-  <div id="login-page" class="fixed inset-0 flex items-center justify-center bg-white z-50">
-    <div class="p-6 max-w-sm w-full bg-white rounded-lg shadow-md space-y-4 text-center">
-      <h1 class="text-3xl font-bold text-transparent bg-clip-text" style="background-image: linear-gradient(135deg, #F9A72B, #58B44F);">AfriChat</h1>
-      <p class="text-gray-600">Entrez votre nom pour commencer</p>
-      <input type="text" id="username-input" placeholder="Votre nom..." class="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-orange-400" />
-      <button onclick="startChat()" class="w-full py-2 bg-orange-500 text-white rounded hover:bg-orange-600 transition">Entrer</button>
-    </div>
+  <div id="chat">
+    <h2>Discussion générale</h2>
+    <ul id="messages"></ul>
+    <form id="form">
+      <input id="input" autocomplete="off" placeholder="Votre message">
+      <button>Envoyer</button>
+    </form>
   </div>
 
-  <!-- Interface principale -->
-  <div id="main-app" class="hidden min-h-screen flex flex-col">
-    <div class="bg-white p-4 text-center text-2xl font-bold text-transparent bg-clip-text" style="background-image: linear-gradient(135deg, #F9A72B, #58B44F);">AfriChat</div>
-
-    <!-- Zone de messages -->
-    <div id="chat-messages" class="flex-1 p-4 overflow-y-auto space-y-4"></div>
-
-    <!-- Zone de saisie -->
-    <div class="p-4 bg-white border-t border-gray-200">
-      <div class="flex items-center">
-        <input id="messageInput" type="text" placeholder="Écrivez un message..." class="flex-1 mx-2 px-4 py-2 rounded-full border border-gray-300 focus:border-orange-500 focus:outline-none" />
-        <button onclick="sendMessage()" class="p-2 bg-orange-500 text-white rounded-full hover:bg-orange-600 transition">Envoyer</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Script de chat -->
+  <script src="/socket.io/socket.io.js"></script>
   <script>
-    const socket = io("https://TON-BACKEND-RENDER.onrender.com"); // 🔁 Remplace par ton lien Render
-    let username = localStorage.getItem("username") || "";
+    let socket;
+    let token;
 
-    // Afficher ou non la page de login
-    window.onload = () => {
-      if (username) {
-        document.getElementById("login-page").classList.add("hidden");
-        document.getElementById("main-app").classList.remove("hidden");
-      }
-    };
-
-    function startChat() {
-      const input = document.getElementById("username-input");
-      const name = input.value.trim();
-      if (name) {
-        username = name;
-        localStorage.setItem("username", name);
-        document.getElementById("login-page").classList.add("hidden");
-        document.getElementById("main-app").classList.remove("hidden");
-      } else {
-        alert("Veuillez entrer un nom");
-      }
+    function register() {
+      fetch('/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          username: document.getElementById('username').value,
+          password: document.getElementById('password').value
+        })
+      })
+      .then(res => res.json())
+      .then(data => {
+        document.getElementById('status').textContent = data.success ? "Inscription réussie" : data.error;
+      });
     }
 
-    function sendMessage() {
-      const input = document.getElementById("messageInput");
-      const text = input.value.trim();
-      if (!text) return;
-
-      const now = new Date();
-      const time = now.getHours() + ":" + (now.getMinutes() < 10 ? "0" : "") + now.getMinutes();
-
-      const message = { name: username, text, time };
-
-      appendMessage(message, true); // afficher localement
-      socket.emit("message", message); // envoyer au serveur
-      input.value = "";
+    function login() {
+      fetch('/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          username: document.getElementById('username').value,
+          password: document.getElementById('password').value
+        })
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.token) {
+          token = data.token;
+          initChat();
+        } else {
+          document.getElementById('status').textContent = data.error;
+        }
+      });
     }
 
-    socket.on("message", (data) => {
-      appendMessage(data, false); // afficher message reçu
-    });
+    function initChat() {
+      document.getElementById('chat').style.display = 'block';
+      socket = io({ auth: { token } });
 
-    function appendMessage({ name, text, time }, isOwnMessage) {
-      const align = isOwnMessage ? "justify-end text-right" : "justify-start text-left";
-      const bubble = isOwnMessage ? "bg-green-100 text-black" : "bg-white text-black";
-      const initial = name.charAt(0).toUpperCase();
+      socket.on('history', messages => {
+        const list = document.getElementById('messages');
+        list.innerHTML = '';
+        messages.forEach(msg => {
+          const li = document.createElement('li');
+          li.textContent = `${msg.username}: ${msg.message}`;
+          list.appendChild(li);
+        });
+      });
 
-      const msg = `
-        <div class="flex ${align} items-start gap-2">
-          ${!isOwnMessage ? `<div class="w-8 h-8 bg-orange-300 text-white flex items-center justify-center rounded-full font-bold">${initial}</div>` : ""}
-          <div>
-            <div class="${bubble} px-4 py-2 rounded-lg shadow-md max-w-xs">
-              <p class="font-semibold">${name}</p>
-              <p>${text}</p>
-            </div>
-            <p class="text-xs text-gray-400 mt-1">${time}</p>
-          </div>
-        </div>
-      `;
-      document.getElementById("chat-messages").insertAdjacentHTML("beforeend", msg);
-      document.getElementById("chat-messages").scrollTop = document.getElementById("chat-messages").scrollHeight;
+      socket.on('chat message', msg => {
+        const li = document.createElement('li');
+        li.textContent = `${msg.username}: ${msg.message}`;
+        document.getElementById('messages').appendChild(li);
+      });
+
+      document.getElementById('form').onsubmit = e => {
+        e.preventDefault();
+        const input = document.getElementById('input');
+        socket.emit('chat message', input.value);
+        input.value = '';
+      };
     }
-
-    document.getElementById("messageInput").addEventListener("keypress", function(e) {
-      if (e.key === "Enter") sendMessage();
-    });
   </script>
 </body>
 </html>
