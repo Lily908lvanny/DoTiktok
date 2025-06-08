@@ -1,100 +1,83 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html>
 <head>
   <meta charset="UTF-8">
-  <title>Chat App</title>
+  <title>Chat Firebase</title>
   <style>
-    body { font-family: Arial, sans-serif; padding: 20px; max-width: 600px; margin: auto; }
+    body { font-family: Arial; max-width: 500px; margin: auto; }
     #chat { display: none; }
     #messages { border: 1px solid #ccc; height: 300px; overflow-y: scroll; padding: 10px; }
-    #messages li { margin: 5px 0; }
-    input { margin: 5px; padding: 5px; }
+    input { margin: 5px 0; padding: 8px; width: 100%; }
   </style>
 </head>
 <body>
-  <h2>Connexion</h2>
-  <input id="username" placeholder="Nom d'utilisateur">
+  <h2>Connexion / Inscription</h2>
+  <input id="email" placeholder="Email">
   <input id="password" type="password" placeholder="Mot de passe">
-  <button onclick="register()">S'inscrire</button>
+  <button onclick="signup()">S'inscrire</button>
   <button onclick="login()">Connexion</button>
-  <p id="status"></p>
+  <p id="auth-status"></p>
 
   <div id="chat">
-    <h2>Discussion générale</h2>
+    <h3>Chat en temps réel</h3>
     <ul id="messages"></ul>
-    <form id="form">
-      <input id="input" autocomplete="off" placeholder="Votre message">
-      <button>Envoyer</button>
-    </form>
+    <input id="message" placeholder="Votre message...">
+    <button onclick="sendMessage()">Envoyer</button>
   </div>
 
-  <script src="/socket.io/socket.io.js"></script>
-  <script>
-    let socket;
-    let token;
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
-    function register() {
-      fetch('/register', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          username: document.getElementById('username').value,
-          password: document.getElementById('password').value
-        })
-      })
-      .then(res => res.json())
-      .then(data => {
-        document.getElementById('status').textContent = data.success ? "Inscription réussie" : data.error;
-      });
+  <script>
+    // ✅ Ton projet Firebase
+    const firebaseConfig = {
+      apiKey: "AIzaSyBT4FsQ1DD3ZVtBKfImwTBb4bmgRCpWLYg",
+      authDomain: "chatta-8506a.firebaseapp.com",
+      databaseURL: "https://chatta-8506a-default-rtdb.firebaseio.com",
+      projectId: "chatta-8506a",
+      storageBucket: "chatta-8506a.firebasestorage.app",
+      messagingSenderId: "1052076991579",
+      appId: "1:1052076991579:web:e604c3aa0763908e0acb7e"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.database();
+
+    function signup() {
+      const email = document.getElementById('email').value;
+      const pass = document.getElementById('password').value;
+      auth.createUserWithEmailAndPassword(email, pass)
+        .then(() => {
+          document.getElementById('auth-status').innerText = "Inscription réussie ✅";
+        }).catch(e => alert(e.message));
     }
 
     function login() {
-      fetch('/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          username: document.getElementById('username').value,
-          password: document.getElementById('password').value
-        })
-      })
-      .then(res => res.json())
-      .then(data => {
-        if (data.token) {
-          token = data.token;
-          initChat();
-        } else {
-          document.getElementById('status').textContent = data.error;
-        }
-      });
+      const email = document.getElementById('email').value;
+      const pass = document.getElementById('password').value;
+      auth.signInWithEmailAndPassword(email, pass)
+        .then(() => {
+          document.getElementById('auth-status').innerText = "Connecté ✅";
+          document.getElementById('chat').style.display = 'block';
+        }).catch(e => alert(e.message));
     }
 
-    function initChat() {
-      document.getElementById('chat').style.display = 'block';
-      socket = io({ auth: { token } });
-
-      socket.on('history', messages => {
-        const list = document.getElementById('messages');
-        list.innerHTML = '';
-        messages.forEach(msg => {
-          const li = document.createElement('li');
-          li.textContent = `${msg.username}: ${msg.message}`;
-          list.appendChild(li);
-        });
-      });
-
-      socket.on('chat message', msg => {
-        const li = document.createElement('li');
-        li.textContent = `${msg.username}: ${msg.message}`;
-        document.getElementById('messages').appendChild(li);
-      });
-
-      document.getElementById('form').onsubmit = e => {
-        e.preventDefault();
-        const input = document.getElementById('input');
-        socket.emit('chat message', input.value);
-        input.value = '';
-      };
+    function sendMessage() {
+      const msg = document.getElementById('message').value;
+      const user = auth.currentUser.email;
+      db.ref('messages').push({ user, msg });
+      document.getElementById('message').value = '';
     }
+
+    db.ref('messages').on('child_added', snap => {
+      const data = snap.val();
+      const li = document.createElement('li');
+      li.textContent = `${data.user}: ${data.msg}`;
+      document.getElementById('messages').appendChild(li);
+    });
   </script>
 </body>
 </html>
