@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>AfriChat - Firebase</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Firebase SDK -->
+  <!-- Firebase SDKs importés en module -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-app.js";
     import { getDatabase, ref, push, onChildAdded } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-database.js";
@@ -24,6 +24,7 @@
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
 
+    // Expose pour le script global
     window.db = db;
     window.ref = ref;
     window.push = push;
@@ -32,7 +33,7 @@
 </head>
 <body class="bg-gray-100 min-h-screen flex flex-col">
 
-  <!-- Page de connexion -->
+  <!-- Login -->
   <div id="login-page" class="fixed inset-0 flex items-center justify-center bg-white z-50">
     <div class="p-6 max-w-sm w-full bg-white rounded-lg shadow-md space-y-4 text-center">
       <h1 class="text-3xl font-bold text-transparent bg-clip-text" style="background-image: linear-gradient(135deg, #F9A72B, #58B44F);">AfriChat</h1>
@@ -42,14 +43,12 @@
     </div>
   </div>
 
-  <!-- Interface principale -->
+  <!-- Chat -->
   <div id="main-app" class="hidden min-h-screen flex flex-col">
     <div class="bg-white p-4 text-center text-2xl font-bold text-transparent bg-clip-text" style="background-image: linear-gradient(135deg, #F9A72B, #58B44F);">AfriChat</div>
 
-    <!-- Zone de messages -->
     <div id="chat-messages" class="flex-1 p-4 overflow-y-auto space-y-4"></div>
 
-    <!-- Zone de saisie -->
     <div class="p-4 bg-white border-t border-gray-200">
       <div class="flex items-center">
         <input id="messageInput" type="text" placeholder="Écrivez un message..." class="flex-1 mx-2 px-4 py-2 rounded-full border border-gray-300 focus:border-orange-500 focus:outline-none" disabled />
@@ -69,7 +68,6 @@
 
     let username = null;
 
-    // Demande nom obligatoire avant accès chat
     startChatBtn.addEventListener("click", () => {
       const name = usernameInput.value.trim();
       if (!name) {
@@ -85,7 +83,6 @@
       loadMessages();
     });
 
-    // Charge messages en temps réel depuis Firebase
     function loadMessages() {
       const messagesRef = ref(db, "messages");
       onChildAdded(messagesRef, snapshot => {
@@ -94,7 +91,6 @@
       });
     }
 
-    // Affiche un message dans la discussion
     function appendMessage(name, text, timestamp) {
       const time = new Date(timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
       const isOwnMessage = name === username;
@@ -129,7 +125,6 @@
       chatMessages.scrollTop = chatMessages.scrollHeight;
     }
 
-    // Envoyer message dans Firebase
     sendBtn.addEventListener("click", sendMessage);
     messageInput.addEventListener("keypress", e => {
       if (e.key === "Enter") sendMessage();
