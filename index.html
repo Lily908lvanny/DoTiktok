@@ -8,9 +8,9 @@
   <!-- Firebase SDK -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-app.js";
-    import { getDatabase, ref, push, onChildAdded, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-database.js";
+    import { getDatabase, ref, push, onChildAdded } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-database.js";
 
-    // Ta config Firebase ici
+    // Config Firebase
     const firebaseConfig = {
       apiKey: "AIzaSyBT4FsQ1DD3ZVtBKfImwTBb4bmgRCpWLYg",
       authDomain: "chatta-8506a.firebaseapp.com",
@@ -24,12 +24,10 @@
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
 
-    // Rendre accessibles dans le scope global
     window.db = db;
     window.ref = ref;
     window.push = push;
     window.onChildAdded = onChildAdded;
-    window.serverTimestamp = serverTimestamp;
   </script>
 </head>
 <body class="bg-gray-100 min-h-screen flex flex-col">
@@ -54,8 +52,8 @@
     <!-- Zone de saisie -->
     <div class="p-4 bg-white border-t border-gray-200">
       <div class="flex items-center">
-        <input id="messageInput" type="text" placeholder="Écrivez un message..." class="flex-1 mx-2 px-4 py-2 rounded-full border border-gray-300 focus:border-orange-500 focus:outline-none" />
-        <button id="send-btn" class="p-2 bg-orange-500 text-white rounded-full hover:bg-orange-600 transition">Envoyer</button>
+        <input id="messageInput" type="text" placeholder="Écrivez un message..." class="flex-1 mx-2 px-4 py-2 rounded-full border border-gray-300 focus:border-orange-500 focus:outline-none" disabled />
+        <button id="send-btn" class="p-2 bg-orange-500 text-white rounded-full hover:bg-orange-600 transition" disabled>Envoyer</button>
       </div>
     </div>
   </div>
@@ -69,13 +67,9 @@
     const messageInput = document.getElementById("messageInput");
     const sendBtn = document.getElementById("send-btn");
 
-    let username = localStorage.getItem("username") || "";
+    let username = null;
 
-    // Afficher login ou app selon présence du username
-    if (username) {
-      showChat();
-    }
-
+    // Demande nom obligatoire avant accès chat
     startChatBtn.addEventListener("click", () => {
       const name = usernameInput.value.trim();
       if (!name) {
@@ -84,30 +78,26 @@
       }
       username = name;
       localStorage.setItem("username", username);
-      showChat();
-    });
-
-    function showChat() {
       loginPage.classList.add("hidden");
       mainApp.classList.remove("hidden");
+      messageInput.disabled = false;
+      sendBtn.disabled = false;
       loadMessages();
-    }
+    });
 
-    // Charger et écouter messages en temps réel Firebase
+    // Charge messages en temps réel depuis Firebase
     function loadMessages() {
       const messagesRef = ref(db, "messages");
-
-      onChildAdded(messagesRef, (snapshot) => {
+      onChildAdded(messagesRef, snapshot => {
         const msg = snapshot.val();
         appendMessage(msg.name, msg.text, msg.timestamp);
       });
     }
 
-    // Affichage message
+    // Affiche un message dans la discussion
     function appendMessage(name, text, timestamp) {
       const time = new Date(timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
       const isOwnMessage = name === username;
-
       const align = isOwnMessage ? "justify-end text-right" : "justify-start text-left";
       const bubble = isOwnMessage ? "bg-green-100 text-black" : "bg-white text-black";
       const initial = name.charAt(0).toUpperCase();
@@ -123,7 +113,6 @@
       }
 
       const content = document.createElement("div");
-
       const bubbleDiv = document.createElement("div");
       bubbleDiv.className = `${bubble} px-4 py-2 rounded-lg shadow-md max-w-xs`;
       bubbleDiv.innerHTML = `<p class="font-semibold">${name}</p><p>${text}</p>`;
@@ -142,21 +131,23 @@
 
     // Envoyer message dans Firebase
     sendBtn.addEventListener("click", sendMessage);
-    messageInput.addEventListener("keypress", (e) => {
+    messageInput.addEventListener("keypress", e => {
       if (e.key === "Enter") sendMessage();
     });
 
     function sendMessage() {
       const text = messageInput.value.trim();
       if (!text) return;
-
+      if (!username) {
+        alert("Veuillez entrer un nom avant d'envoyer un message.");
+        return;
+      }
       const messagesRef = ref(db, "messages");
       push(messagesRef, {
         name: username,
         text,
         timestamp: Date.now()
       });
-
       messageInput.value = "";
     }
   </script>
