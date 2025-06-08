@@ -3,126 +3,140 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Chat général - Firebase Auth + Realtime DB</title>
+<title>Chat Général</title>
 <style>
-  /* Style sombre moderne */
-  @import url('https://fonts.googleapis.com/css2?family=Poppins&display=swap');
+  /* Police moderne */
+  @import url('https://fonts.googleapis.com/css2?family=Roboto&display=swap');
   body {
     margin: 0; padding: 0;
-    font-family: 'Poppins', sans-serif;
-    background: #121212;
-    color: #eee;
+    font-family: 'Roboto', sans-serif;
+    background: #f0f2f5;
+    color: #050505;
     display: flex;
     flex-direction: column;
     height: 100vh;
   }
   header {
-    padding: 1rem;
-    background: #1f1f1f;
+    background: #4267B2; /* bleu Facebook */
+    padding: 1rem 1.5rem;
+    color: white;
+    font-weight: 700;
+    font-size: 1.5rem;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    box-shadow: 0 1px 5px #0009;
-  }
-  header h1 {
-    margin: 0;
-    font-weight: 600;
-    font-size: 1.5rem;
+    box-shadow: 0 2px 4px rgb(0 0 0 / 0.1);
   }
   #user-info {
     display: flex;
     align-items: center;
-    gap: 0.7rem;
+    gap: 0.8rem;
   }
   #user-info img {
-    width: 32px;
-    height: 32px;
+    width: 36px;
+    height: 36px;
     border-radius: 50%;
+    object-fit: cover;
+    box-shadow: 0 0 4px rgb(0 0 0 / 0.15);
   }
   button {
-    background: #bb86fc;
+    background: white;
     border: none;
-    padding: 0.5rem 1rem;
     border-radius: 20px;
-    cursor: pointer;
+    padding: 0.45rem 1rem;
     font-weight: 600;
-    transition: background 0.3s ease;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    color: #4267B2;
+    box-shadow: 0 2px 5px rgb(66 103 178 / 0.4);
   }
   button:hover {
-    background: #985eff;
+    background: #e7f0ff;
   }
   main {
     flex: 1;
     display: flex;
     flex-direction: column;
-    padding: 1rem;
-    overflow: hidden;
+    padding: 1rem 1.5rem;
   }
   #messages {
     flex: 1;
-    overflow-y: auto;
-    background: #1e1e1e;
-    border-radius: 10px;
+    background: white;
+    border-radius: 12px;
     padding: 1rem;
-    box-shadow: inset 0 0 10px #0008;
+    box-shadow: 0 4px 12px rgb(0 0 0 / 0.05);
+    overflow-y: auto;
+    scroll-behavior: smooth;
   }
   .message {
-    margin-bottom: 0.8rem;
-    padding: 0.5rem 1rem;
-    border-radius: 10px;
-    background: #2a2a2a;
     max-width: 70%;
+    margin-bottom: 1rem;
+    padding: 0.75rem 1rem;
+    border-radius: 18px;
+    background: #e4e6eb;
+    color: #050505;
+    box-shadow: 0 1px 2px rgb(0 0 0 / 0.1);
     word-wrap: break-word;
+    position: relative;
   }
   .message.self {
-    background: #6200ea;
+    background: #0084ff;
     color: white;
     margin-left: auto;
   }
   .message .sender {
     font-weight: 700;
     margin-bottom: 0.3rem;
-    font-size: 0.9rem;
-    opacity: 0.8;
+    font-size: 0.85rem;
+    opacity: 0.75;
   }
   form {
-    display: flex;
     margin-top: 1rem;
+    display: flex;
+    gap: 0.8rem;
   }
   input[type="text"] {
     flex: 1;
-    padding: 0.7rem 1rem;
-    border-radius: 25px;
-    border: none;
+    padding: 0.9rem 1.2rem;
+    border-radius: 24px;
+    border: 1px solid #ccd0d5;
     font-size: 1rem;
     outline: none;
-    background: #2a2a2a;
-    color: #eee;
-    box-shadow: inset 0 0 5px #0009;
+    transition: border-color 0.3s ease;
   }
-  input::placeholder {
-    color: #aaa;
+  input[type="text"]:focus {
+    border-color: #1877f2;
+    box-shadow: 0 0 5px #1877f2aa;
   }
   button.send {
-    margin-left: 0.7rem;
-    padding: 0 1.5rem;
+    background: #1877f2;
+    color: white;
+    border-radius: 24px;
+    padding: 0 1.8rem;
+    font-weight: 700;
+    box-shadow: 0 2px 8px rgb(24 119 242 / 0.6);
   }
-  /* Scrollbar */
+  button.send:hover {
+    background: #155db2;
+  }
+  /* Scrollbar custom */
   #messages::-webkit-scrollbar {
     width: 8px;
   }
   #messages::-webkit-scrollbar-thumb {
-    background: #6200ea;
-    border-radius: 10px;
+    background: #1877f2;
+    border-radius: 8px;
+  }
+  #messages::-webkit-scrollbar-track {
+    background: #f0f2f5;
   }
 </style>
 </head>
 <body>
 
 <header>
-  <h1>Chat Général</h1>
+  <div>Chat Général</div>
   <div id="user-info">
-    <!-- User info + buttons -->
     <button id="login-btn">Connexion Google</button>
   </div>
 </header>
@@ -130,12 +144,11 @@
 <main>
   <div id="messages"></div>
   <form id="message-form" style="display:none;">
-    <input type="text" id="message-input" placeholder="Écris ton message..." autocomplete="off" />
+    <input type="text" id="message-input" placeholder="Écris un message..." autocomplete="off" />
     <button type="submit" class="send">Envoyer</button>
   </form>
 </main>
 
-<!-- Firebase App (the core Firebase SDK) -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-app.js";
   import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-auth.js";
@@ -151,20 +164,17 @@
     appId: "1:1052076991579:web:e604c3aa0763908e0acb7e"
   };
 
-  // Initialize Firebase
   const app = initializeApp(firebaseConfig);
   const auth = getAuth(app);
   const db = getDatabase(app);
   const provider = new GoogleAuthProvider();
 
-  // DOM Elements
   const loginBtn = document.getElementById('login-btn');
   const userInfoDiv = document.getElementById('user-info');
   const messageForm = document.getElementById('message-form');
   const messageInput = document.getElementById('message-input');
   const messagesDiv = document.getElementById('messages');
 
-  // Connexion Google
   loginBtn.addEventListener('click', () => {
     if (!auth.currentUser) {
       signInWithPopup(auth, provider).catch(console.error);
@@ -173,13 +183,11 @@
     }
   });
 
-  // Afficher ou cacher les éléments selon état connexion
   onAuthStateChanged(auth, user => {
-    messagesDiv.innerHTML = ''; // reset messages à chaque connexion/déconnexion
+    messagesDiv.innerHTML = '';
     if (user) {
       loginBtn.textContent = 'Déconnexion';
-      userInfoDiv.style.gap = '0.7rem';
-      // Afficher avatar + nom
+
       if (!document.getElementById('user-avatar')) {
         const img = document.createElement('img');
         img.src = user.photoURL;
@@ -191,6 +199,7 @@
         const span = document.createElement('span');
         span.id = 'user-name';
         span.textContent = user.displayName;
+        span.style.fontWeight = '500';
         userInfoDiv.insertBefore(span, loginBtn);
       }
       messageForm.style.display = 'flex';
@@ -198,17 +207,14 @@
     } else {
       loginBtn.textContent = 'Connexion Google';
       messageForm.style.display = 'none';
-      // Supprimer avatar + nom
       const avatar = document.getElementById('user-avatar');
       if (avatar) avatar.remove();
       const nameSpan = document.getElementById('user-name');
       if (nameSpan) nameSpan.remove();
-      // Stop listening messages
       stopListeningMessages();
     }
   });
 
-  // Envoyer un message
   messageForm.addEventListener('submit', e => {
     e.preventDefault();
     const user = auth.currentUser;
@@ -224,11 +230,10 @@
     messageInput.value = '';
   });
 
-  // Écouter les messages en temps réel
   let unsubscribeMessages = null;
   function startListeningMessages() {
     const messagesRef = ref(db, 'messages');
-    if (unsubscribeMessages) return; // déjà écouté
+    if (unsubscribeMessages) return;
     unsubscribeMessages = onChildAdded(messagesRef, snapshot => {
       const data = snapshot.val();
       if (!data) return;
@@ -236,14 +241,10 @@
     });
   }
   function stopListeningMessages() {
-    if (unsubscribeMessages) {
-      unsubscribeMessages(); // pour onChildAdded ce n’est pas un unsubscribe, on va gérer autrement (cf. note)
-      unsubscribeMessages = null;
-    }
+    unsubscribeMessages = null;
     messagesDiv.innerHTML = '';
   }
 
-  // Ajouter un message dans le DOM
   function addMessageToDOM(data) {
     const user = auth.currentUser;
     const div = document.createElement('div');
