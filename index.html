@@ -29,41 +29,33 @@
   </script>
 </head>
 <body class="bg-gray-100 min-h-screen flex flex-col">
-
   <!-- Login -->
-  <div id="login-page" class="fixed inset-0 flex items-center justify-center bg-white z-50">
-    <div class="p-6 max-w-sm w-full bg-white rounded-lg shadow-md space-y-4 text-center">
-      <h1 class="text-3xl font-bold text-transparent bg-clip-text" style="background-image: linear-gradient(135deg, #F9A72B, #58B44F);">AfriChat</h1>
+  <div id="login-page" class="fixed inset-0 flex items-center justify-center bg-white z-50 transition-all duration-300">
+    <div class="p-6 max-w-sm w-full bg-white rounded-2xl shadow-lg space-y-4 text-center">
+      <h1 class="text-3xl font-extrabold text-transparent bg-clip-text" style="background-image: linear-gradient(135deg, #F9A72B, #58B44F);">AfriChat</h1>
       <p class="text-gray-600">Entrez votre nom et choisissez une photo de profil</p>
-      <input type="text" id="username-input" placeholder="Votre nom..." class="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-orange-400" />
+      <input type="text" id="username-input" placeholder="Votre nom..." class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-400" />
       <input type="file" id="profile-pic-input" accept="image/*" class="w-full mt-2" />
-      <button id="start-chat-btn" class="w-full py-2 bg-orange-500 text-white rounded hover:bg-orange-600 transition">Entrer</button>
+      <button id="start-chat-btn" class="w-full py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors duration-300 font-semibold">Entrer</button>
     </div>
   </div>
 
   <!-- Chat -->
   <div id="main-app" class="hidden min-h-screen flex flex-col">
-    <div class="bg-white p-4 text-center text-2xl font-bold text-transparent bg-clip-text" style="background-image: linear-gradient(135deg, #F9A72B, #58B44F);">AfriChat</div>
-
-    <div id="chat-messages" class="flex-1 p-4 overflow-y-auto space-y-4"></div>
-
-    <div class="p-4 bg-white border-t border-gray-200">
-      <div class="flex items-center">
-        <input id="messageInput" type="text" placeholder="Écrivez un message..." class="flex-1 mx-2 px-4 py-2 rounded-full border border-gray-300 focus:border-orange-500 focus:outline-none" disabled />
-        <button id="send-btn" class="p-2 bg-orange-500 text-white rounded-full hover:bg-orange-600 transition" disabled>Envoyer</button>
-      </div>
+    <!-- Header modernisé avec bouton déconnexion -->
+    <div class="flex justify-between items-center bg-white p-4 border-b border-gray-200 rounded-b-2xl shadow">
+      <div class="text-2xl font-bold text-transparent bg-clip-text" style="background-image: linear-gradient(135deg, #F9A72B, #58B44F);">AfriChat</div>
+      <button id="logout-btn" class="ml-4 px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-red-400 hover:text-white transition-colors duration-300 font-semibold">
+        Déconnexion
+      </button>
     </div>
-  </div>
 
-  <script>
-    const loginPage = document.getElementById("login-page");
-    const mainApp = document.getElementById("main-app");
-    const usernameInput = document.getElementById("username-input");
-    const profilePicInput = document.getElementById("profile-pic-input");
+    <div id="chat-messages" class="flex-1 p-4 overflow-y-auto space-y-4ElementById("profile-pic-input");
     const startChatBtn = document.getElementById("start-chat-btn");
     const chatMessages = document.getElementById("chat-messages");
     const messageInput = document.getElementById("messageInput");
     const sendBtn = document.getElementById("send-btn");
+    const logoutBtn = document.getElementById("logout-btn");
 
     let username = null;
     let profilePicBase64 = null;
@@ -125,14 +117,12 @@
 
       if (!isOwnMessage) {
         if (profilePic) {
-          // afficher photo de profil
           const img = document.createElement("img");
           img.src = profilePic;
           img.alt = name;
           img.className = "w-8 h-8 rounded-full object-cover";
           msg.appendChild(img);
         } else {
-          // avatar avec initiale
           const initial = name.charAt(0).toUpperCase();
           const avatar = document.createElement("div");
           avatar.className = "w-8 h-8 bg-orange-300 text-white flex items-center justify-center rounded-full font-bold";
@@ -140,7 +130,6 @@
           msg.appendChild(avatar);
         }
       } else {
-        // Pour ses propres messages, afficher la photo de profil choisie
         if (profilePicBase64) {
           const img = document.createElement("img");
           img.src = profilePicBase64;
@@ -187,6 +176,21 @@
         profilePic: profilePicBase64
       });
       messageInput.value = "";
+    }
+
+    // Déconnexion
+    if (logoutBtn) {
+      logoutBtn.addEventListener("click", () => {
+        localStorage.removeItem("username");
+        localStorage.removeItem("profilePic");
+        username = null;
+        profilePicBase64 = null;
+        mainApp.classList.add("hidden");
+        loginPage.classList.remove("hidden");
+        messageInput.disabled = true;
+        sendBtn.disabled = true;
+        chatMessages.innerHTML = "";
+      });
     }
 
     // Si déjà connecté, récupérer nom et photo dans localStorage
