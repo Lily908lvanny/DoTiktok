@@ -6,9 +6,8 @@
   <title>AfriChat - Firebase avec photo de profil</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script type="module">
-    // Import et initialisation Firebase
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-app.js";
-    import { getDatabase, ref, push, onChildAdded } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-database.js";
+    import { getDatabase, ref, push, onChildAdded, query, orderByChild } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-database.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyBT4FsQ1DD3ZVtBKfImwTBb4bmgRCpWLYg",
@@ -20,13 +19,11 @@
       appId: "1:1052076991579:web:e604c3aa0763908e0acb7e"
     };
 
+    // Initialisation Firebase
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
 
-    window.db = db;
-    window.ref = ref;
-    window.push = push;
-    window.onChildAdded = onChildAdded;
+    window._firebase = { db, ref, push, onChildAdded, query, orderByChild }; // Pour accès dans le script classique
   </script>
 </head>
 <body class="bg-gray-100 min-h-screen flex flex-col">
@@ -51,177 +48,185 @@
       </button>
     </div>
 
-    <div id="chat-messages" class="flex-1 p-4 overflow-y-auto space-y-4"></div>
-
-    <div class="p-4 bg-white border-t border-gray-200">
-      <div class="flex items-center">
-        <input id="messageInput" type="text" placeholder="Écrivez un message..." class="flex-1 mx-2 px-4 py-2 rounded-full border border-gray-300 focus:border-orange-500 focus:outline-none" disabled />
+ivez un message..." class="flex-1 mx-2 px-4 py-2 rounded-full border border-gray-300 focus:border-orange-500 focus:outline-none" disabled />
         <button id="send-btn" class="p-2 bg-orange-500 text-white rounded-full hover:bg-orange-600 transition-colors duration-300" disabled>Envoyer</button>
       </div>
     </div>
   </div>
 
   <script>
-    const loginPage = document.getElementById("login-page");
-    const mainApp = document.getElementById("main-app");
-    const usernameInput = document.getElementById("username-input");
-    const profilePicInput = document.getElementById("profile-pic-input");
-    const startChatBtn = document.getElementById("start-chat-btn");
-    const chatMessages = document.getElementById("chat-messages");
-    const messageInput = document.getElementById("messageInput");
-    const sendBtn = document.getElementById("send-btn");
-    const logoutBtn = document.getElementById("logout-btn");
+    // Attendre que le module Firebase soit prêt
+    function firebaseReady(cb) {
+      if (window._firebase) return cb(window._firebase);
+      setTimeout(() => firebaseReady loginPage = document.getElementById("login-page");
+      const mainApp = document.getElementById("main-app");
+      const usernameInput = document.getElementById("username-input");
+      const profilePicInput = document.getElementById("profile-pic-input");
+      const startChatBtn = document.getElementById("start-chat-btn");
+      const chatMessages = document.getElementById("chat-messages");
+      const messageInput = document.getElementById("messageInput");
+      const sendBtn = document.getElementById("send-btn");
+      const logoutBtn = document.getElementById("logout-btn");
 
-    let username = null;
-    let profilePicBase64 = null;
+      let username = null;
+      let profilePicBase64 = null;
+      let loaded = false;
 
-    // Fonction pour convertir une image en base64
-    function getBase64(file, callback) {
-      const reader = new FileReader();
-      reader.onload = () => callback(reader.result);
-      reader.readAsDataURL(file);
-    }
-
-    startChatBtn.addEventListener("click", () => {
-      const name = usernameInput.value.trim();
-      if (!name) {
-        alert("Veuillez entrer un nom");
-        return;
+      // Fonction pour convertir une image en base64
+      function getBase64(file, callback) {
+        const reader = new FileReader();
+        reader.onload = () => callback(reader.result);
+        reader.readAsDataURL(file);
       }
-      if (!profilePicBase64) {
-        alert("Veuillez choisir une photo de profil");
-        return;
-      }
-      username = name;
-      // Stocker nom + photo en localStorage
-      localStorage.setItem("username", username);
-      localStorage.setItem("profilePic", profilePicBase64);
 
-      loginPage.classList.add("hidden");
-      mainApp.classList.remove("hidden");
-      messageInput.disabled = false;
-      sendBtn.disabled = false;
-
-      loadMessages();
-    });
-
-    profilePicInput.addEventListener("change", () => {
-      const file = profilePicInput.files[0];
-      if (!file) return;
-      getBase64(file, (base64) => {
-        profilePicBase64 = base64;
-      });
-    });
-
-    function loadMessages() {
-      const messagesRef = ref(db, "messages");
-      onChildAdded(messagesRef, snapshot => {
-        const msg = snapshot.val();
-        appendMessage(msg.name, msg.text, msg.timestamp, msg.profilePic);
-      });
-    }
-
-    function appendMessage(name, text, timestamp, profilePic) {
-      const time = new Date(timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-      const isOwnMessage = name === username;
-      const align = isOwnMessage ? "justify-end text-right" : "justify-start text-left";
-      const bubble = isOwnMessage ? "bg-green-100 text-black" : "bg-white text-black";
-
-      const msg = document.createElement("div");
-      msg.className = `flex ${align} items-start gap-2`;
-
-      if (!isOwnMessage) {
-        if (profilePic) {
-          const img = document.createElement("img");
-          img.src = profilePic;
-          img.alt = name;
-          img.className = "w-8 h-8 rounded-full object-cover";
-          msg.appendChild(img);
-        } else {
-          const initial = name.charAt(0).toUpperCase();
-          const avatar = document.createElement("div");
-          avatar.className = "w-8 h-8 bg-orange-300 text-white flex items-center justify-center rounded-full font-bold";
-          avatar.textContent = initial;
-          msg.appendChild(avatar);
+      startChatBtn.addEventListener("click", () => {
+        const name = usernameInput.value.trim();
+        if (!name) {
+          alert("Veuillez entrer un nom");
+          return;
         }
-      } else {
-        if (profilePicBase64) {
-          const img = document.createElement("img");
-          img.src = profilePicBase64;
-          img.alt = name;
-          img.className = "w-8 h-8 rounded-full object-cover";
-          msg.appendChild(img);
+        if (!profilePicBase64) {
+          alert("Veuillez choisir une photo de profil");
+          return;
         }
-      }
+        username = name;
+        // Stocker nom + photo en localStorage
+        localStorage.setItem("username", username);
+        localStorage.setItem("profilePic", profilePicBase64);
 
-      const content = document.createElement("div");
-      const bubbleDiv = document.createElement("div");
-      bubbleDiv.className = `${bubble} px-4 py-2 rounded-lg shadow-md max-w-xs`;
-      bubbleDiv.innerHTML = `<p class="font-semibold">${name}</p><p>${text}</p>`;
-
-      const timeP = document.createElement("p");
-      timeP.className = "text-xs text-gray-400 mt-1";
-      timeP.textContent = time;
-
-      content.appendChild(bubbleDiv);
-      content.appendChild(timeP);
-
-      msg.appendChild(content);
-      chatMessages.appendChild(msg);
-      chatMessages.scrollTop = chatMessages.scrollHeight;
-    }
-
-    sendBtn.addEventListener("click", sendMessage);
-    messageInput.addEventListener("keypress", e => {
-      if (e.key === "Enter") sendMessage();
-    });
-
-    function sendMessage() {
-      const text = messageInput.value.trim();
-      if (!text) return;
-      if (!username) {
-        alert("Veuillez entrer un nom avant d'envoyer un message.");
-        return;
-      }
-      const messagesRef = ref(db, "messages");
-      push(messagesRef, {
-        name: username,
-        text,
-        timestamp: Date.now(),
-        profilePic: profilePicBase64
-      });
-      messageInput.value = "";
-    }
-
-    // Déconnexion
-    if (logoutBtn) {
-      logoutBtn.addEventListener("click", () => {
-        localStorage.removeItem("username");
-        localStorage.removeItem("profilePic");
-        username = null;
-        profilePicBase64 = null;
-        mainApp.classList.add("hidden");
-        loginPage.classList.remove("hidden");
-        messageInput.disabled = true;
-        sendBtn.disabled = true;
-        chatMessages.innerHTML = "";
-      });
-    }
-
-    // Si déjà connecté, récupérer nom et photo dans localStorage
-    window.onload = () => {
-      const storedName = localStorage.getItem("username");
-      const storedPic = localStorage.getItem("profilePic");
-      if (storedName && storedPic) {
-        username = storedName;
-        profilePicBase64 = storedPic;
         loginPage.classList.add("hidden");
         mainApp.classList.remove("hidden");
         messageInput.disabled = false;
         sendBtn.disabled = false;
-        loadMessages();
+
+        if (!loaded) loadMessages();
+      });
+
+      profilePicInput.addEventListener("change", () => {
+        const file = profilePicInput.files[0];
+        if (!file) return;
+        getBase64(file, (base64) => {
+          profilePicBase64 = base64;
+        });
+      });
+
+      function loadMessages() {
+        loaded = true;
+        chatMessages.innerHTML = "";
+        // Charger messages des 24 dernières heures uniquement
+        const now = Date.now();
+        const messagesRef = query(ref(db, "messages"), orderByChild("timestamp"));
+        onChildAdded(messagesRef, snapshot => {
+          const msg = snapshot.val();
+          // Filtrage 24h
+          if (now - msg.timestamp > 24 * 60 * 60 * 1000) return;
+          appendMessage(msg.name, msg.text, msg.timestamp, msg.profilePic);
+        });
       }
-    };
+
+      function appendMessage(name, text, timestamp, profilePic) {
+        const time = new Date(timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+        const isOwnMessage = name === username;
+        const align = isOwnMessage ? "justify-end text-right" : "justify-start text-left";
+        const bubble = isOwnMessage ? "bg-green-100 text-black" : "bg-white text-black";
+
+        const msg = document.createElement("div");
+        msg.className = `flex ${align} items-start gap-2`;
+
+        if (!isOwnMessage) {
+          if (profilePic) {
+            const img = document.createElement("img");
+            img.src = profilePic;
+            img.alt = name;
+            img.className = "w-8 h-8 rounded-full object-cover";
+            msg.appendChild(img);
+          } else {
+            const initial = name.charAt(0).toUpperCase();
+            const avatar = document.createElement("div");
+            avatar.className = "w";
+            avatar.textContent = initial;
+            msg.appendChild(avatar);
+          }
+        } else {
+          if (profilePicBase64) {
+            const img = document.createElement("img");
+            img.src = profilePicBase64;
+            img.alt = name;
+            img.className = "w-8 h-8 rounded-full object-cover";
+            msg.appendChild(img);
+          }
+        }
+
+        const content = document.createElement("div");
+        const bubbleDiv = document.createElement("div");
+        bubbleDiv.className = `${bubble} px-4 py-2 rounded-lg shadow-md max-w-xs`;
+        bubbleDiv.innerHTML = `<p class="font-semibold">${name}</p><p>${text}</p>`;
+
+        const timeP = document.createElement("p");
+        timeP.className = "text-xs text-gray-400 mt-1";
+        timeP.textContent = time;
+
+        content.appendChild(bubbleDiv);
+        content.appendChild(timeP);
+
+        msg.appendChild(content);
+        chatMessages.appendChild(msg);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+      }
+
+      sendBtn.addEventListener("click", sendMessage);
+      messageInput.addEventListener("keypress", e => {
+        if (e.key === "Enter") sendMessage();
+      });
+
+      function sendMessage() {
+        const text = messageInput.value.trim();
+        if (!text) return;
+        if (!username) {
+          alert("Veuillez entrer un nom avant d'envoyer un message.");
+          return;
+        }
+        const messagesRef = ref(db, "messages");
+        push(messagesRef, {
+          name: username,
+          text,
+          timestamp: Date.now(),
+          profilePic: profilePicBase64
+        });
+        messageInput.value = "";
+      }
+
+      // Déconnexion
+      if (logoutBtn) {
+        logoutBtn.addEventListener("click", () => {
+          localStorage.removeItem("username");
+          localStorage.removeItem("profilePic");
+          username = null;
+          profilePicBase64 = null;
+          mainApp.classList.add("hidden");
+          loginPage.classList.remove("hidden");
+          messageInput.disabled = true;
+          sendBtn.disabled = true;
+          chatMessages.innerHTML = "";
+          loaded = false;
+        });
+      }
+
+      // Si déjà connecté, récupérer nom et photo dans localStorage
+      window.onload = () => {
+        const storedName = localStorage.getItem("username");
+        const storedPic = localStorage.getItem("profilePic");
+        if (storedName && storedPic) {
+          username = storedName;
+          profilePicBase64 = storedPic;
+          loginPage.classList.add("hidden");
+          mainApp.classList.remove("hidden");
+          messageInput.disabled = false;
+          sendBtn.disabled = false;
+          loadMessages();
+        }
+      };
+    });
   </script>
 </body>
 </html>
