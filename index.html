@@ -7,7 +7,7 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-app.js";
-    import { getDatabase, ref, push, onChildAdded } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-database.js";
+    import { getDatabase, ref, push, onChildAdded, remove } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-database.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyBT4FsQ1DD3ZVtBKfImwTBb4bmgRCpWLYg",
@@ -26,13 +26,14 @@
     window.ref = ref;
     window.push = push;
     window.onChildAdded = onChildAdded;
+    window.remove = remove;
   </script>
 </head>
 <body class="bg-gray-100 min-h-screen flex flex-col">
   <!-- Login -->
   <div id="login-page" class="fixed inset-0 flex items-center justify-center bg-white z-50 transition-all duration-300">
     <div class="p-6 max-w-sm w-full bg-white rounded-2xl shadow-lg space-y-4 text-center">
-      <h1 class="text-3xl font-extrabold text-transparent bg-clip-text" style="background-image: linear-gradient(135deg, #F9A72B, #58B44F);">CI.BASE</h1>
+      <h1 class="text-3xl font-extrabold text-transparent bg-clip-text" style="background-image: linear-gradient(135deg, #F9A72B, #58B44F);">AfriChat</h1>
       <p class="text-gray-600">Entrez votre nom et choisissez une photo de profil</p>
       <input type="text" id="username-input" placeholder="Votre nom..." class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-400" />
       <input type="file" id="profile-pic-input" accept="image/*" class="w-full mt-2" />
@@ -54,7 +55,7 @@
 
     <div class="p-4 bg-white border-t border-gray-200">
       <div class="flex items-center">
-        <input id="messageInput" type="text" placeholder="Écrivez un message..." class="flex-1 mx-2 px-4 py-2 rounded-full border border-gray-300 focus:border-orange-500 focus:outline-none" disabled />
+        <input id="messageInput" type="text" placeholder="É2 rounded-full border border-gray-300 focus:border-orange-500 focus:outline-none" disabled />
         <button id="send-btn" class="p-2 bg-orange-500 text-white rounded-full hover:bg-orange-600 transition-colors duration-300" disabled>Envoyer</button>
       </div>
     </div>
@@ -114,6 +115,7 @@
 
     function loadMessages() {
       const messagesRef = ref(db, "messages");
+      chatMessages.innerHTML = ""; // Vide le chat à chaque rechargement
       onChildAdded(messagesRef, snapshot => {
         const msg = snapshot.val();
         appendMessage(msg.name, msg.text, msg.timestamp, msg.profilePic);
@@ -180,6 +182,14 @@
       if (!text) return;
       if (!username) {
         alert("Veuillez entrer un nom avant d'envoyer un message.");
+        return;
+      }
+      // SUPPRESSION DE TOUS LES MESSAGES SI /0
+      if (text === "/0") {
+        const messagesRef = ref(db, "messages");
+        remove(messagesRef);
+        messageInput.value = "";
+        chatMessages.innerHTML = "";
         return;
       }
       const messagesRef = ref(db, "messages");
