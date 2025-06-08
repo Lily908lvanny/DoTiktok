@@ -1,268 +1,164 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Chat Général</title>
-<style>
-  /* Police moderne */
-  @import url('https://fonts.googleapis.com/css2?family=Roboto&display=swap');
-  body {
-    margin: 0; padding: 0;
-    font-family: 'Roboto', sans-serif;
-    background: #f0f2f5;
-    color: #050505;
-    display: flex;
-    flex-direction: column;
-    height: 100vh;
-  }
-  header {
-    background: #4267B2; /* bleu Facebook */
-    padding: 1rem 1.5rem;
-    color: white;
-    font-weight: 700;
-    font-size: 1.5rem;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    box-shadow: 0 2px 4px rgb(0 0 0 / 0.1);
-  }
-  #user-info {
-    display: flex;
-    align-items: center;
-    gap: 0.8rem;
-  }
-  #user-info img {
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
-    object-fit: cover;
-    box-shadow: 0 0 4px rgb(0 0 0 / 0.15);
-  }
-  button {
-    background: white;
-    border: none;
-    border-radius: 20px;
-    padding: 0.45rem 1rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-    color: #4267B2;
-    box-shadow: 0 2px 5px rgb(66 103 178 / 0.4);
-  }
-  button:hover {
-    background: #e7f0ff;
-  }
-  main {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    padding: 1rem 1.5rem;
-  }
-  #messages {
-    flex: 1;
-    background: white;
-    border-radius: 12px;
-    padding: 1rem;
-    box-shadow: 0 4px 12px rgb(0 0 0 / 0.05);
-    overflow-y: auto;
-    scroll-behavior: smooth;
-  }
-  .message {
-    max-width: 70%;
-    margin-bottom: 1rem;
-    padding: 0.75rem 1rem;
-    border-radius: 18px;
-    background: #e4e6eb;
-    color: #050505;
-    box-shadow: 0 1px 2px rgb(0 0 0 / 0.1);
-    word-wrap: break-word;
-    position: relative;
-  }
-  .message.self {
-    background: #0084ff;
-    color: white;
-    margin-left: auto;
-  }
-  .message .sender {
-    font-weight: 700;
-    margin-bottom: 0.3rem;
-    font-size: 0.85rem;
-    opacity: 0.75;
-  }
-  form {
-    margin-top: 1rem;
-    display: flex;
-    gap: 0.8rem;
-  }
-  input[type="text"] {
-    flex: 1;
-    padding: 0.9rem 1.2rem;
-    border-radius: 24px;
-    border: 1px solid #ccd0d5;
-    font-size: 1rem;
-    outline: none;
-    transition: border-color 0.3s ease;
-  }
-  input[type="text"]:focus {
-    border-color: #1877f2;
-    box-shadow: 0 0 5px #1877f2aa;
-  }
-  button.send {
-    background: #1877f2;
-    color: white;
-    border-radius: 24px;
-    padding: 0 1.8rem;
-    font-weight: 700;
-    box-shadow: 0 2px 8px rgb(24 119 242 / 0.6);
-  }
-  button.send:hover {
-    background: #155db2;
-  }
-  /* Scrollbar custom */
-  #messages::-webkit-scrollbar {
-    width: 8px;
-  }
-  #messages::-webkit-scrollbar-thumb {
-    background: #1877f2;
-    border-radius: 8px;
-  }
-  #messages::-webkit-scrollbar-track {
-    background: #f0f2f5;
-  }
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AfriChat - Firebase</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Firebase SDK -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-app.js";
+    import { getDatabase, ref, push, onChildAdded, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-database.js";
+
+    // Ta config Firebase ici
+    const firebaseConfig = {
+      apiKey: "AIzaSyBT4FsQ1DD3ZVtBKfImwTBb4bmgRCpWLYg",
+      authDomain: "chatta-8506a.firebaseapp.com",
+      databaseURL: "https://chatta-8506a-default-rtdb.firebaseio.com",
+      projectId: "chatta-8506a",
+      storageBucket: "chatta-8506a.appspot.com",
+      messagingSenderId: "1052076991579",
+      appId: "1:1052076991579:web:e604c3aa0763908e0acb7e"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
+    // Rendre accessibles dans le scope global
+    window.db = db;
+    window.ref = ref;
+    window.push = push;
+    window.onChildAdded = onChildAdded;
+    window.serverTimestamp = serverTimestamp;
+  </script>
 </head>
-<body>
+<body class="bg-gray-100 min-h-screen flex flex-col">
 
-<header>
-  <div>Chat Général</div>
-  <div id="user-info">
-    <button id="login-btn">Connexion Google</button>
+  <!-- Page de connexion -->
+  <div id="login-page" class="fixed inset-0 flex items-center justify-center bg-white z-50">
+    <div class="p-6 max-w-sm w-full bg-white rounded-lg shadow-md space-y-4 text-center">
+      <h1 class="text-3xl font-bold text-transparent bg-clip-text" style="background-image: linear-gradient(135deg, #F9A72B, #58B44F);">AfriChat</h1>
+      <p class="text-gray-600">Entrez votre nom pour commencer</p>
+      <input type="text" id="username-input" placeholder="Votre nom..." class="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-orange-400" />
+      <button id="start-chat-btn" class="w-full py-2 bg-orange-500 text-white rounded hover:bg-orange-600 transition">Entrer</button>
+    </div>
   </div>
-</header>
 
-<main>
-  <div id="messages"></div>
-  <form id="message-form" style="display:none;">
-    <input type="text" id="message-input" placeholder="Écris un message..." autocomplete="off" />
-    <button type="submit" class="send">Envoyer</button>
-  </form>
-</main>
+  <!-- Interface principale -->
+  <div id="main-app" class="hidden min-h-screen flex flex-col">
+    <div class="bg-white p-4 text-center text-2xl font-bold text-transparent bg-clip-text" style="background-image: linear-gradient(135deg, #F9A72B, #58B44F);">AfriChat</div>
 
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-app.js";
-  import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-auth.js";
-  import { getDatabase, ref, push, onChildAdded, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-database.js";
+    <!-- Zone de messages -->
+    <div id="chat-messages" class="flex-1 p-4 overflow-y-auto space-y-4"></div>
 
-  const firebaseConfig = {
-    apiKey: "AIzaSyBT4FsQ1DD3ZVtBKfImwTBb4bmgRCpWLYg",
-    authDomain: "chatta-8506a.firebaseapp.com",
-    databaseURL: "https://chatta-8506a-default-rtdb.firebaseio.com",
-    projectId: "chatta-8506a",
-    storageBucket: "chatta-8506a.appspot.com",
-    messagingSenderId: "1052076991579",
-    appId: "1:1052076991579:web:e604c3aa0763908e0acb7e"
-  };
+    <!-- Zone de saisie -->
+    <div class="p-4 bg-white border-t border-gray-200">
+      <div class="flex items-center">
+        <input id="messageInput" type="text" placeholder="Écrivez un message..." class="flex-1 mx-2 px-4 py-2 rounded-full border border-gray-300 focus:border-orange-500 focus:outline-none" />
+        <button id="send-btn" class="p-2 bg-orange-500 text-white rounded-full hover:bg-orange-600 transition">Envoyer</button>
+      </div>
+    </div>
+  </div>
 
-  const app = initializeApp(firebaseConfig);
-  const auth = getAuth(app);
-  const db = getDatabase(app);
-  const provider = new GoogleAuthProvider();
+  <script>
+    const loginPage = document.getElementById("login-page");
+    const mainApp = document.getElementById("main-app");
+    const usernameInput = document.getElementById("username-input");
+    const startChatBtn = document.getElementById("start-chat-btn");
+    const chatMessages = document.getElementById("chat-messages");
+    const messageInput = document.getElementById("messageInput");
+    const sendBtn = document.getElementById("send-btn");
 
-  const loginBtn = document.getElementById('login-btn');
-  const userInfoDiv = document.getElementById('user-info');
-  const messageForm = document.getElementById('message-form');
-  const messageInput = document.getElementById('message-input');
-  const messagesDiv = document.getElementById('messages');
+    let username = localStorage.getItem("username") || "";
 
-  loginBtn.addEventListener('click', () => {
-    if (!auth.currentUser) {
-      signInWithPopup(auth, provider).catch(console.error);
-    } else {
-      signOut(auth).catch(console.error);
+    // Afficher login ou app selon présence du username
+    if (username) {
+      showChat();
     }
-  });
 
-  onAuthStateChanged(auth, user => {
-    messagesDiv.innerHTML = '';
-    if (user) {
-      loginBtn.textContent = 'Déconnexion';
-
-      if (!document.getElementById('user-avatar')) {
-        const img = document.createElement('img');
-        img.src = user.photoURL;
-        img.id = 'user-avatar';
-        img.alt = 'Avatar';
-        userInfoDiv.insertBefore(img, loginBtn);
+    startChatBtn.addEventListener("click", () => {
+      const name = usernameInput.value.trim();
+      if (!name) {
+        alert("Veuillez entrer un nom");
+        return;
       }
-      if (!document.getElementById('user-name')) {
-        const span = document.createElement('span');
-        span.id = 'user-name';
-        span.textContent = user.displayName;
-        span.style.fontWeight = '500';
-        userInfoDiv.insertBefore(span, loginBtn);
+      username = name;
+      localStorage.setItem("username", username);
+      showChat();
+    });
+
+    function showChat() {
+      loginPage.classList.add("hidden");
+      mainApp.classList.remove("hidden");
+      loadMessages();
+    }
+
+    // Charger et écouter messages en temps réel Firebase
+    function loadMessages() {
+      const messagesRef = ref(db, "messages");
+
+      onChildAdded(messagesRef, (snapshot) => {
+        const msg = snapshot.val();
+        appendMessage(msg.name, msg.text, msg.timestamp);
+      });
+    }
+
+    // Affichage message
+    function appendMessage(name, text, timestamp) {
+      const time = new Date(timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+      const isOwnMessage = name === username;
+
+      const align = isOwnMessage ? "justify-end text-right" : "justify-start text-left";
+      const bubble = isOwnMessage ? "bg-green-100 text-black" : "bg-white text-black";
+      const initial = name.charAt(0).toUpperCase();
+
+      const msg = document.createElement("div");
+      msg.className = `flex ${align} items-start gap-2`;
+
+      if (!isOwnMessage) {
+        const avatar = document.createElement("div");
+        avatar.className = "w-8 h-8 bg-orange-300 text-white flex items-center justify-center rounded-full font-bold";
+        avatar.textContent = initial;
+        msg.appendChild(avatar);
       }
-      messageForm.style.display = 'flex';
-      startListeningMessages();
-    } else {
-      loginBtn.textContent = 'Connexion Google';
-      messageForm.style.display = 'none';
-      const avatar = document.getElementById('user-avatar');
-      if (avatar) avatar.remove();
-      const nameSpan = document.getElementById('user-name');
-      if (nameSpan) nameSpan.remove();
-      stopListeningMessages();
+
+      const content = document.createElement("div");
+
+      const bubbleDiv = document.createElement("div");
+      bubbleDiv.className = `${bubble} px-4 py-2 rounded-lg shadow-md max-w-xs`;
+      bubbleDiv.innerHTML = `<p class="font-semibold">${name}</p><p>${text}</p>`;
+
+      const timeP = document.createElement("p");
+      timeP.className = "text-xs text-gray-400 mt-1";
+      timeP.textContent = time;
+
+      content.appendChild(bubbleDiv);
+      content.appendChild(timeP);
+
+      msg.appendChild(content);
+      chatMessages.appendChild(msg);
+      chatMessages.scrollTop = chatMessages.scrollHeight;
     }
-  });
 
-  messageForm.addEventListener('submit', e => {
-    e.preventDefault();
-    const user = auth.currentUser;
-    const text = messageInput.value.trim();
-    if (!user || !text) return;
-    const messagesRef = ref(db, 'messages');
-    push(messagesRef, {
-      senderId: user.uid,
-      senderName: user.displayName,
-      text: text,
-      timestamp: serverTimestamp()
+    // Envoyer message dans Firebase
+    sendBtn.addEventListener("click", sendMessage);
+    messageInput.addEventListener("keypress", (e) => {
+      if (e.key === "Enter") sendMessage();
     });
-    messageInput.value = '';
-  });
 
-  let unsubscribeMessages = null;
-  function startListeningMessages() {
-    const messagesRef = ref(db, 'messages');
-    if (unsubscribeMessages) return;
-    unsubscribeMessages = onChildAdded(messagesRef, snapshot => {
-      const data = snapshot.val();
-      if (!data) return;
-      addMessageToDOM(data);
-    });
-  }
-  function stopListeningMessages() {
-    unsubscribeMessages = null;
-    messagesDiv.innerHTML = '';
-  }
+    function sendMessage() {
+      const text = messageInput.value.trim();
+      if (!text) return;
 
-  function addMessageToDOM(data) {
-    const user = auth.currentUser;
-    const div = document.createElement('div');
-    div.classList.add('message');
-    if (user && data.senderId === user.uid) {
-      div.classList.add('self');
+      const messagesRef = ref(db, "messages");
+      push(messagesRef, {
+        name: username,
+        text,
+        timestamp: Date.now()
+      });
+
+      messageInput.value = "";
     }
-    const senderDiv = document.createElement('div');
-    senderDiv.classList.add('sender');
-    senderDiv.textContent = data.senderName || 'Anonyme';
-    const textDiv = document.createElement('div');
-    textDiv.textContent = data.text;
-    div.appendChild(senderDiv);
-    div.appendChild(textDiv);
-    messagesDiv.appendChild(div);
-    messagesDiv.scrollTop = messagesDiv.scrollHeight;
-  }
-</script>
-
+  </script>
 </body>
 </html>
