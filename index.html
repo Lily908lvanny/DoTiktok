@@ -3,14 +3,12 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>AfriChat - Firebase</title>
+  <title>AfriChat - Firebase avec photo de profil</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Firebase SDKs importés en module -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-app.js";
     import { getDatabase, ref, push, onChildAdded } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-database.js";
 
-    // Config Firebase
     const firebaseConfig = {
       apiKey: "AIzaSyBT4FsQ1DD3ZVtBKfImwTBb4bmgRCpWLYg",
       authDomain: "chatta-8506a.firebaseapp.com",
@@ -24,7 +22,6 @@
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
 
-    // Expose pour le script global
     window.db = db;
     window.ref = ref;
     window.push = push;
@@ -37,8 +34,9 @@
   <div id="login-page" class="fixed inset-0 flex items-center justify-center bg-white z-50">
     <div class="p-6 max-w-sm w-full bg-white rounded-lg shadow-md space-y-4 text-center">
       <h1 class="text-3xl font-bold text-transparent bg-clip-text" style="background-image: linear-gradient(135deg, #F9A72B, #58B44F);">AfriChat</h1>
-      <p class="text-gray-600">Entrez votre nom pour commencer</p>
+      <p class="text-gray-600">Entrez votre nom et choisissez une photo de profil</p>
       <input type="text" id="username-input" placeholder="Votre nom..." class="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-orange-400" />
+      <input type="file" id="profile-pic-input" accept="image/*" class="w-full mt-2" />
       <button id="start-chat-btn" class="w-full py-2 bg-orange-500 text-white rounded hover:bg-orange-600 transition">Entrer</button>
     </div>
   </div>
@@ -61,12 +59,21 @@
     const loginPage = document.getElementById("login-page");
     const mainApp = document.getElementById("main-app");
     const usernameInput = document.getElementById("username-input");
+    const profilePicInput = document.getElementById("profile-pic-input");
     const startChatBtn = document.getElementById("start-chat-btn");
     const chatMessages = document.getElementById("chat-messages");
     const messageInput = document.getElementById("messageInput");
     const sendBtn = document.getElementById("send-btn");
 
     let username = null;
+    let profilePicBase64 = null;
+
+    // Fonction pour convertir une image en base64
+    function getBase64(file, callback) {
+      const reader = new FileReader();
+      reader.onload = () => callback(reader.result);
+      reader.readAsDataURL(file);
+    }
 
     startChatBtn.addEventListener("click", () => {
       const name = usernameInput.value.trim();
@@ -74,38 +81,73 @@
         alert("Veuillez entrer un nom");
         return;
       }
+      if (!profilePicBase64) {
+        alert("Veuillez choisir une photo de profil");
+        return;
+      }
       username = name;
+      // Stocker nom + photo en localStorage
       localStorage.setItem("username", username);
+      localStorage.setItem("profilePic", profilePicBase64);
+
       loginPage.classList.add("hidden");
       mainApp.classList.remove("hidden");
       messageInput.disabled = false;
       sendBtn.disabled = false;
+
       loadMessages();
+    });
+
+    profilePicInput.addEventListener("change", () => {
+      const file = profilePicInput.files[0];
+      if (!file) return;
+      getBase64(file, (base64) => {
+        profilePicBase64 = base64;
+      });
     });
 
     function loadMessages() {
       const messagesRef = ref(db, "messages");
       onChildAdded(messagesRef, snapshot => {
         const msg = snapshot.val();
-        appendMessage(msg.name, msg.text, msg.timestamp);
+        appendMessage(msg.name, msg.text, msg.timestamp, msg.profilePic);
       });
     }
 
-    function appendMessage(name, text, timestamp) {
+    function appendMessage(name, text, timestamp, profilePic) {
       const time = new Date(timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
       const isOwnMessage = name === username;
       const align = isOwnMessage ? "justify-end text-right" : "justify-start text-left";
       const bubble = isOwnMessage ? "bg-green-100 text-black" : "bg-white text-black";
-      const initial = name.charAt(0).toUpperCase();
 
       const msg = document.createElement("div");
       msg.className = `flex ${align} items-start gap-2`;
 
       if (!isOwnMessage) {
-        const avatar = document.createElement("div");
-        avatar.className = "w-8 h-8 bg-orange-300 text-white flex items-center justify-center rounded-full font-bold";
-        avatar.textContent = initial;
-        msg.appendChild(avatar);
+        if (profilePic) {
+          // afficher photo de profil
+          const img = document.createElement("img");
+          img.src = profilePic;
+          img.alt = name;
+          img.className = "w-8 h-8 rounded-full object-cover";
+          msg.appendChild(img);
+        } else {
+          // avatar avec initiale
+          const initial = name.charAt(0).toUpperCase();
+          const avatar = document.createElement("div");
+          avatar.className = "w-8 h-8 bg-orange-300 text-white flex items-center justify-center rounded-full font-bold";
+          avatar.textContent = initial;
+          msg.appendChild(avatar);
+        }
+      } else {
+        // Pour ses propres messages, afficher la photo de profil choisie
+        if (profilePicBase64) {
+          const img = document.createElement("img");
+          img.src = profilePicBase64;
+          img.alt = name;
+          img.className = "w-8 h-8 rounded-full object-cover";
+          msg.appendChild(img);
+        }
       }
 
       const content = document.createElement("div");
@@ -141,10 +183,26 @@
       push(messagesRef, {
         name: username,
         text,
-        timestamp: Date.now()
+        timestamp: Date.now(),
+        profilePic: profilePicBase64
       });
       messageInput.value = "";
     }
+
+    // Si déjà connecté, récupérer nom et photo dans localStorage
+    window.onload = () => {
+      const storedName = localStorage.getItem("username");
+      const storedPic = localStorage.getItem("profilePic");
+      if (storedName && storedPic) {
+        username = storedName;
+        profilePicBase64 = storedPic;
+        loginPage.classList.add("hidden");
+        mainApp.classList.remove("hidden");
+        messageInput.disabled = false;
+        sendBtn.disabled = false;
+        loadMessages();
+      }
+    };
   </script>
 </body>
 </html>
