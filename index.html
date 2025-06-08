@@ -50,7 +50,21 @@
       </button>
     </div>
 
-    <div id="chat-messages" class="flex-1 p-4 overflow-y-auto space-y-4ElementById("profile-pic-input");
+    <div id="chat-messages" class="flex-1 p-4 overflow-y-auto space-y-4"></div>
+
+    <div class="p-4 bg-white border-t border-gray-200">
+      <div class="flex items-center">
+        <input id="messageInput" type="text" placeholder="Écrivez un message..." class="flex-1 mx-2 px-4 py-2 rounded-full border border-gray-300 focus:border-orange-500 focus:outline-none" disabled />
+        <button id="send-btn" class="p-2 bg-orange-500 text-white rounded-full hover:bg-orange-600 transition-colors duration-300" disabled>Envoyer</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const loginPage = document.getElementById("login-page");
+    const mainApp = document.getElementById("main-app");
+    const usernameInput = document.getElementById("username-input");
+    const profilePicInput = document.getElementById("profile-pic-input");
     const startChatBtn = document.getElementById("start-chat-btn");
     const chatMessages = document.getElementById("chat-messages");
     const messageInput = document.getElementById("messageInput");
