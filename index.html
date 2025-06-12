@@ -2,230 +2,37 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>AfriChat - Firebase avec photo de profil</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-app.js";
-    import { getDatabase, ref, push, onChildAdded, query, orderByChild } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-database.js";
-
-    const firebaseConfig = {
-      apiKey: "AIzaSyBT4FsQ1DD3ZVtBKfImwTBb4bmgRCpWLYg",
-      authDomain: "chatta-8506a.firebaseapp.com",
-      databaseURL: "https://chatta-8506a-default-rtdb.firebaseio.com",
-      projectId: "chatta-8506a",
-      storageBucket: "chatta-8506a.appspot.com",
-      messagingSenderId: "1052076991579",
-      appId: "1:1052076991579:web:e604c3aa0763908e0acb7e"
-    };
-
-    // Initialisation Firebase
-    const app = initializeApp(firebaseConfig);
-    const db = getDatabase(app);
-
-    window._firebase = { db, ref, push, onChildAdded, query, orderByChild }; // Pour accès dans le script classique
-  </script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Bienvenue 😈</title>
+  <style>
+    body {
+      background-color: black;
+      color: red;
+      font-family: 'Comic Sans MS', cursive;
+      text-align: center;
+      padding-top: 20%;
+    }
+    h1 {
+      font-size: 3rem;
+    }
+  </style>
 </head>
-<body class="bg-gray-100 min-h-screen flex flex-col">
-  <!-- Login -->
-  <div id="login-page" class="fixed inset-0 flex items-center justify-center bg-white z-50 transition-all duration-300">
-    <div class="p-6 max-w-sm w-full bg-white rounded-2xl shadow-lg space-y-4 text-center">
-      <h1 class="text-3xl font-extrabold text-transparent bg-clip-text" style="background-image: linear-gradient(135deg, #F9A72B, #58B44F);">AfriChat</h1>
-      <p class="text-gray-600">Entrez votre nom et choisissez une photo de profil</p>
-      <input type="text" id="username-input" placeholder="Votre nom..." class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-400" />
-      <input type="file" id="profile-pic-input" accept="image/*" class="w-full mt-2" />
-      <button id="start-chat-btn" class="w-full py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors duration-300 font-semibold">Entrer</button>
-    </div>
-  </div>
+<body>
+  <h1>Tu es prêt ? 😏</h1>
+  <button id="startBtn">Clique ici</button>
 
-  <!-- Chat -->
-  <div id="main-app" class="hidden min-h-screen flex flex-col">
-    <!-- Header modernisé avec bouton déconnexion -->
-    <div class="flex justify-between items-center bg-white p-4 border-b border-gray-200 rounded-b-2xl shadow">
-      <div class="text-2xl font-bold text-transparent bg-clip-text" style="background-image: linear-gradient(135deg, #F9A72B, #58B44F);">AfriChat</div>
-      <button id="logout-btn" class="ml-4 px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-red-400 hover:text-white transition-colors duration-300 font-semibold">
-        Déconnexion
-      </button>
-    </div>
-
-ivez un message..." class="flex-1 mx-2 px-4 py-2 rounded-full border border-gray-300 focus:border-orange-500 focus:outline-none" disabled />
-        <button id="send-btn" class="p-2 bg-orange-500 text-white rounded-full hover:bg-orange-600 transition-colors duration-300" disabled>Envoyer</button>
-      </div>
-    </div>
-  </div>
+  <audio id="trollAudio" src="getout.mp3"></audio>
 
   <script>
-    // Attendre que le module Firebase soit prêt
-    function firebaseReady(cb) {
-      if (window._firebase) return cb(window._firebase);
-      setTimeout(() => firebaseReady loginPage = document.getElementById("login-page");
-      const mainApp = document.getElementById("main-app");
-      const usernameInput = document.getElementById("username-input");
-      const profilePicInput = document.getElementById("profile-pic-input");
-      const startChatBtn = document.getElementById("start-chat-btn");
-      const chatMessages = document.getElementById("chat-messages");
-      const messageInput = document.getElementById("messageInput");
-      const sendBtn = document.getElementById("send-btn");
-      const logoutBtn = document.getElementById("logout-btn");
+    const btn = document.getElementById("startBtn");
+    const audio = document.getElementById("trollAudio");
 
-      let username = null;
-      let profilePicBase64 = null;
-      let loaded = false;
-
-      // Fonction pour convertir une image en base64
-      function getBase64(file, callback) {
-        const reader = new FileReader();
-        reader.onload = () => callback(reader.result);
-        reader.readAsDataURL(file);
-      }
-
-      startChatBtn.addEventListener("click", () => {
-        const name = usernameInput.value.trim();
-        if (!name) {
-          alert("Veuillez entrer un nom");
-          return;
-        }
-        if (!profilePicBase64) {
-          alert("Veuillez choisir une photo de profil");
-          return;
-        }
-        username = name;
-        // Stocker nom + photo en localStorage
-        localStorage.setItem("username", username);
-        localStorage.setItem("profilePic", profilePicBase64);
-
-        loginPage.classList.add("hidden");
-        mainApp.classList.remove("hidden");
-        messageInput.disabled = false;
-        sendBtn.disabled = false;
-
-        if (!loaded) loadMessages();
+    btn.addEventListener("click", () => {
+      audio.volume = 1.0; // Volume maximum
+      audio.play().catch(err => {
+        alert("Veuillez autoriser le son !");
+        console.error("Erreur audio : ", err);
       });
-
-      profilePicInput.addEventListener("change", () => {
-        const file = profilePicInput.files[0];
-        if (!file) return;
-        getBase64(file, (base64) => {
-          profilePicBase64 = base64;
-        });
-      });
-
-      function loadMessages() {
-        loaded = true;
-        chatMessages.innerHTML = "";
-        // Charger messages des 24 dernières heures uniquement
-        const now = Date.now();
-        const messagesRef = query(ref(db, "messages"), orderByChild("timestamp"));
-        onChildAdded(messagesRef, snapshot => {
-          const msg = snapshot.val();
-          // Filtrage 24h
-          if (now - msg.timestamp > 24 * 60 * 60 * 1000) return;
-          appendMessage(msg.name, msg.text, msg.timestamp, msg.profilePic);
-        });
-      }
-
-      function appendMessage(name, text, timestamp, profilePic) {
-        const time = new Date(timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-        const isOwnMessage = name === username;
-        const align = isOwnMessage ? "justify-end text-right" : "justify-start text-left";
-        const bubble = isOwnMessage ? "bg-green-100 text-black" : "bg-white text-black";
-
-        const msg = document.createElement("div");
-        msg.className = `flex ${align} items-start gap-2`;
-
-        if (!isOwnMessage) {
-          if (profilePic) {
-            const img = document.createElement("img");
-            img.src = profilePic;
-            img.alt = name;
-            img.className = "w-8 h-8 rounded-full object-cover";
-            msg.appendChild(img);
-          } else {
-            const initial = name.charAt(0).toUpperCase();
-            const avatar = document.createElement("div");
-            avatar.className = "w";
-            avatar.textContent = initial;
-            msg.appendChild(avatar);
-          }
-        } else {
-          if (profilePicBase64) {
-            const img = document.createElement("img");
-            img.src = profilePicBase64;
-            img.alt = name;
-            img.className = "w-8 h-8 rounded-full object-cover";
-            msg.appendChild(img);
-          }
-        }
-
-        const content = document.createElement("div");
-        const bubbleDiv = document.createElement("div");
-        bubbleDiv.className = `${bubble} px-4 py-2 rounded-lg shadow-md max-w-xs`;
-        bubbleDiv.innerHTML = `<p class="font-semibold">${name}</p><p>${text}</p>`;
-
-        const timeP = document.createElement("p");
-        timeP.className = "text-xs text-gray-400 mt-1";
-        timeP.textContent = time;
-
-        content.appendChild(bubbleDiv);
-        content.appendChild(timeP);
-
-        msg.appendChild(content);
-        chatMessages.appendChild(msg);
-        chatMessages.scrollTop = chatMessages.scrollHeight;
-      }
-
-      sendBtn.addEventListener("click", sendMessage);
-      messageInput.addEventListener("keypress", e => {
-        if (e.key === "Enter") sendMessage();
-      });
-
-      function sendMessage() {
-        const text = messageInput.value.trim();
-        if (!text) return;
-        if (!username) {
-          alert("Veuillez entrer un nom avant d'envoyer un message.");
-          return;
-        }
-        const messagesRef = ref(db, "messages");
-        push(messagesRef, {
-          name: username,
-          text,
-          timestamp: Date.now(),
-          profilePic: profilePicBase64
-        });
-        messageInput.value = "";
-      }
-
-      // Déconnexion
-      if (logoutBtn) {
-        logoutBtn.addEventListener("click", () => {
-          localStorage.removeItem("username");
-          localStorage.removeItem("profilePic");
-          username = null;
-          profilePicBase64 = null;
-          mainApp.classList.add("hidden");
-          loginPage.classList.remove("hidden");
-          messageInput.disabled = true;
-          sendBtn.disabled = true;
-          chatMessages.innerHTML = "";
-          loaded = false;
-        });
-      }
-
-      // Si déjà connecté, récupérer nom et photo dans localStorage
-      window.onload = () => {
-        const storedName = localStorage.getItem("username");
-        const storedPic = localStorage.getItem("profilePic");
-        if (storedName && storedPic) {
-          username = storedName;
-          profilePicBase64 = storedPic;
-          loginPage.classList.add("hidden");
-          mainApp.classList.remove("hidden");
-          messageInput.disabled = false;
-          sendBtn.disabled = false;
-          loadMessages();
-        }
-      };
     });
   </script>
 </body>
