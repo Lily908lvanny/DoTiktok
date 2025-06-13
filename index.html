@@ -1,39 +1,104 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Bienvenue 😈</title>
-  <style>
+<html lang="en">
+ <head> 
+  <meta charset="utf-8"> 
+  <title>Infos - Consulter les Moyennes</title> 
+  <meta name="viewport" content="width=device-width, initial-scale=1"> 
+  <link href="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" rel="stylesheet"> 
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet"> 
+  <style type="text/css">
     body {
-      background-color: black;
-      color: red;
-      font-family: 'Comic Sans MS', cursive;
-      text-align: center;
-      padding-top: 20%;
+        margin-top: 20px;
     }
-    h1 {
-      font-size: 3rem;
+
+    .modal-footer {
+        border-top: 0px;
     }
-  </style>
-</head>
-<body>
-  <h1>Tu es prêt ? 😏</h1>
-  <button id="startBtn">Clique ici</button>
 
-  <audio id="trollAudio" src="getout.mp3"></audio>
+    .logo-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
 
+    .logo {
+        max-width: 100px; 
+    }
+</style> 
+ </head> 
+ <body style=""> 
+  <div id="loginModal" class="modal show" tabindex="-1" role="dialog" aria-hidden="true"> 
+   <div class="modal-dialog"> 
+    <div class="modal-content"> 
+     <div class="modal-header"> 
+      <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button> 
+      <div class="logo-container"> 
+       <img src="/media/cnam/desps.png" alt="DESPS" class="logo"> 
+       <h1 class="text-center">Consultation Fiche Moyennes DESPS</h1> 
+       <img src="/media/cnam/desps.png" alt="DESPS" class="logo"> 
+      </div> 
+     </div> 
+     <div class="modal-body"> 
+      <form method="post" action="/edit/moyenne-check/" class="form col-md-12 center-block"> 
+       <div class="form-group"> 
+        <label for="matricule_desps">Matricule DESPS</label> 
+        <input type="text" name="matricule" value="" id="matricule" class="form-control input-lg" required> 
+       </div> 
+       <div class="form-group"> 
+        <label for="nguidcnam">Nom de famille</label> 
+        <input type="text" name="nom" value="" id="nom" class="form-control input-lg" required> 
+       </div> 
+       <div class="form-group"> 
+        <label for="nguidcnam">Date de Naissance (au format JJ/MM/AAAA)</label> 
+        <input type="text" name="datenaiss" value="" id="datenaiss" class="form-control input-lg" placeholder="JJ/MM/AAAA" required> 
+       </div> 
+       <span style="color:red;text-align:center"></span> 
+       <div class="form-group"> 
+        <button class="btn btn-lg btn-block" style="background-color: #FF940E; color: white; font-weight:bold;"> <i class="fa fa-search"></i> Consulter ma fiche </button> 
+       </div> 
+      </form> 
+     </div> 
+     <div class="modal-footer"> 
+      <div class="col-md-1accordion2"> 
+      </div> 
+     </div> 
+    </div> 
+   </div> 
+  </div> 
   <script>
-    const btn = document.getElementById("startBtn");
-    const audio = document.getElementById("trollAudio");
+var input = document.querySelectorAll('#datenaiss')[0];
 
-    btn.addEventListener("click", () => {
-      audio.volume = 1.0; // Volume maximum
-      audio.play().catch(err => {
-        alert("Veuillez autoriser le son !");
-        console.error("Erreur audio : ", err);
-      });
-    });
-  </script>
-</body>
+var dateInputMask = function dateInputMask(elm) {
+  elm.addEventListener('keypress', function(e) {
+    if(e.keyCode < 47 || e.keyCode > 57) {
+      e.preventDefault();
+    }
+
+    var len = elm.value.length;
+
+    // If we're at a particular place, let the user type the slash
+    // i.e., 12/12/1212
+    if(len !== 1 || len !== 3) {
+      if(e.keyCode == 47) {
+        e.preventDefault();
+      }
+    }
+
+    // If they don't add the slash, do it for them...
+    if(len === 2) {
+      elm.value += '/';
+    }
+
+    // If they don't add the slash, do it for them...
+    if(len === 5) {
+      elm.value += '/';
+    }
+  });
+};
+
+dateInputMask(input);
+</script> 
+  <script type="text/javascript">
+    // JS si possible
+</script> 
+ </body>
 </html>
